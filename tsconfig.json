@@ -2,18 +2,20 @@
     "compileOnSave": false,
     "compilerOptions": {
         "target": "es5",
-        "module": "commonjs",
+        "module": "CommonJS",
         "outDir": "dist",
         "sourceMap": true,
         "removeComments": true,
-        "declaration": false,
+        "declaration": true,
         "moduleResolution": "node",
-        "experimentalDecorators": true
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true
     },
     "include": [
         "src/**/*.ts"
     ],
     "exclude": [
-        "node_modules"
+        "node_modules",
+        "**/*.spec.ts"
     ]
 }
