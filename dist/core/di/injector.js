@@ -108,6 +108,10 @@ var Injector = (function () {
         }
         throw new ReferenceError('Dependency does not exist.');
     };
+    Injector.prototype.clear = function () {
+        this.singletons = {};
+        this.factories = {};
+    };
     return Injector;
 }());
 exports.Injector = Injector;

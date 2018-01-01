@@ -19,18 +19,18 @@ describe('Inject decorator', function () {
             return log(message);
         }
     }
-    DI.register(Logger);
+    beforeEach(function () {
+        DI.clear();
+    });
 
     it('should throw an error when trying to inject an unregistered dependency into the constructor', function () {
-
-        DI.register(Logger);
         @Inject()
         class Car {
-            constructor(public logger: Logger, public fork: Farm) { }
+            constructor(public logger: Logger) { }
         }
 
         expect(() => {
-            const car = new Car(undefined, undefined);
+            const car = new Car(undefined);
         }).to.throw(ReferenceError, 'Dependency does not exist.');
 
     });
@@ -38,11 +38,12 @@ describe('Inject decorator', function () {
         expect(() => {
             class Car {
                 @Inject()
-                log: Fodder;
+                log: Logger;
             }
         }).to.throw(ReferenceError, 'Dependency does not exist.');
     });
     it('should inject a dependencies into a property', function () {
+        DI.register(Logger);
         class Car {
             @Inject()
             log: Logger;
@@ -64,6 +65,51 @@ describe('Inject decorator', function () {
         expect(car.logger).to.be.an.instanceof(Logger);
         expect(car.fork).to.be.an.instanceOf(Fork);
         car.logger.info('Holla');
-        expect(log.called).to.be.ok;
+    });
+    it('should inject a value dependency into a constructor', function () {
+        const value = {
+            fact: 2,
+            sun: 4
+        };
+        DI.register({ provide: 'Logger', useValue: value });
+        @Inject()
+        class Face {
+            constructor(public logger: Logger) { }
+        }
+        const face = new Face(undefined);
+        expect(face.logger).to.eql(value);
+    });
+
+    it('should inject a useFactory dependency into a constructor', function () {
+        const value = {
+            fact: 2,
+            sun: 4
+        };
+        DI.register({
+            provide: 'Logger', useFactory: function () {
+                return value;
+            }
+        });
+        @Inject()
+        class Face {
+            constructor(public logger: Logger) { }
+        }
+        const face = new Face(undefined);
+        expect(face.logger).to.eql(value);
+    });
+
+    it('should inject a multi instance dependency into a constructor', function () {
+        class Fact {
+            be = false;
+        }
+        DI.register({
+            provide: Fact, useClass: Fact, multi: true
+        });
+        @Inject()
+        class Face {
+            constructor(public fact: Fact) { }
+        }
+        const face = new Face(undefined);
+        expect(face.fact).to.be.an.instanceOf(Fact);
     });
 });

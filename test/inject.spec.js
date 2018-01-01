@@ -27,22 +27,22 @@ describe('Inject decorator', function () {
         };
         return Logger;
     }());
-    DI.register(Logger);
+    beforeEach(function () {
+        DI.clear();
+    });
     it('should throw an error when trying to inject an unregistered dependency into the constructor', function () {
-        DI.register(Logger);
         var Car = /** @class */ (function () {
-            function Car(logger, fork) {
+            function Car(logger) {
                 this.logger = logger;
-                this.fork = fork;
             }
             Car = __decorate([
                 Inject(),
-                __metadata("design:paramtypes", [Logger, Object])
+                __metadata("design:paramtypes", [Logger])
             ], Car);
             return Car;
         }());
         expect(function () {
-            var car = new Car(undefined, undefined);
+            var car = new Car(undefined);
         }).to["throw"](ReferenceError, 'Dependency does not exist.');
     });
     it('should throw an error when trying to inject an unregistered dependency into a property', function () {
@@ -52,13 +52,14 @@ describe('Inject decorator', function () {
                 }
                 __decorate([
                     Inject(),
-                    __metadata("design:type", Object)
+                    __metadata("design:type", Logger)
                 ], Car.prototype, "log");
                 return Car;
             }());
         }).to["throw"](ReferenceError, 'Dependency does not exist.');
     });
     it('should inject a dependencies into a property', function () {
+        DI.register(Logger);
         var Car = /** @class */ (function () {
             function Car() {
             }
@@ -96,6 +97,70 @@ describe('Inject decorator', function () {
         expect(car.logger).to.be.an["instanceof"](Logger);
         expect(car.fork).to.be.an.instanceOf(Fork);
         car.logger.info('Holla');
-        expect(log.called).to.be.ok;
+    });
+    it('should inject a value dependency into a constructor', function () {
+        var value = {
+            fact: 2,
+            sun: 4
+        };
+        DI.register({ provide: 'Logger', useValue: value });
+        var Face = /** @class */ (function () {
+            function Face(logger) {
+                this.logger = logger;
+            }
+            Face = __decorate([
+                Inject(),
+                __metadata("design:paramtypes", [Logger])
+            ], Face);
+            return Face;
+        }());
+        var face = new Face(undefined);
+        expect(face.logger).to.eql(value);
+    });
+    it('should inject a useFactory dependency into a constructor', function () {
+        var value = {
+            fact: 2,
+            sun: 4
+        };
+        DI.register({
+            provide: 'Logger', useFactory: function () {
+                return value;
+            }
+        });
+        var Face = /** @class */ (function () {
+            function Face(logger) {
+                this.logger = logger;
+            }
+            Face = __decorate([
+                Inject(),
+                __metadata("design:paramtypes", [Logger])
+            ], Face);
+            return Face;
+        }());
+        var face = new Face(undefined);
+        expect(face.logger).to.eql(value);
+    });
+    it('should inject a multi instance dependency into a constructor', function () {
+        var Fact = /** @class */ (function () {
+            function Fact() {
+                this.be = false;
+            }
+            return Fact;
+        }());
+        DI.register({
+            provide: Fact, useClass: Fact, multi: true
+        });
+        var Face = /** @class */ (function () {
+            function Face(fact) {
+                this.fact = fact;
+            }
+            Face = __decorate([
+                Inject(),
+                __metadata("design:paramtypes", [Fact])
+            ], Face);
+            return Face;
+        }());
+        var face = new Face(undefined);
+        expect(face.fact).to.be.an.instanceOf(Fact);
     });
 });

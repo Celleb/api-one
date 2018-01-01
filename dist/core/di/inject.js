@@ -20,30 +20,34 @@ function Inject() {
             target[key] = dependency;
             return;
         }
-        return (function (_super) {
-            __extends(class_1, _super);
-            function class_1() {
-                var args = [];
-                for (var _i = 0; _i < arguments.length; _i++) {
-                    args[_i] = arguments[_i];
-                }
-                var _this = this;
-                var params = Reflect.getOwnMetadata('design:paramtypes', target);
-                if (params) {
-                    for (var i in params) {
-                        if (args[i] !== undefined) {
-                            return;
-                        }
-                        var type = params[i].name;
-                        var dependency = _1.DI.inject(type);
-                        args[i] = dependency;
-                    }
-                }
-                _this = _super.apply(this, args) || this;
-                return _this;
-            }
-            return class_1;
-        }(target));
+        return newClass(target);
     };
 }
 exports.Inject = Inject;
+function newClass(target) {
+    return (function (_super) {
+        __extends(class_1, _super);
+        function class_1() {
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i] = arguments[_i];
+            }
+            var _this = this;
+            var params = Reflect.getOwnMetadata('design:paramtypes', target);
+            if (params) {
+                for (var i in params) {
+                    if (args[i] !== undefined) {
+                        return;
+                    }
+                    var type = params[i].name;
+                    var dependency = _1.DI.inject(type);
+                    args[i] = dependency;
+                }
+            }
+            _this = _super.apply(this, args) || this;
+            return _this;
+        }
+        return class_1;
+    }(target));
+}
+exports.newClass = newClass;

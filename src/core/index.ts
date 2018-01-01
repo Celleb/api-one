@@ -1,2 +1,2 @@
 export * from './di';
-export * from './constructor';
+export * from './types';

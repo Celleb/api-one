@@ -11,21 +11,32 @@ export function Inject() {
             target[key] = dependency;
             return;
         }
-        return class extends target {
-            constructor(...args: any[]) {
-                const params = Reflect.getOwnMetadata('design:paramtypes', target);
-                if (params) {
-                    for (let i in params) {
-                        if (args[i] !== undefined) {
-                            return;
-                        }
-                        const type = params[i].name;
-                        const dependency = DI.inject(type);
-                        args[i] = dependency;
-                    }
-                }
-                super(...args);
-            }
-        };
+        return newClass(target);
     };
 }
+
+/**
+ * Extends the constructor and injects the dependencies
+ * @function
+ * @param {Constructor} target
+ * @returns {Constructor}
+ */
+export function newClass(target: Constructor): Constructor {
+    return class extends target {
+        constructor(...args: any[]) {
+            const params = Reflect.getOwnMetadata('design:paramtypes', target);
+            if (params) {
+                for (let i in params) {
+                    if (args[i] !== undefined) {
+                        return;
+                    }
+                    const type = params[i].name;
+                    const dependency = DI.inject(type);
+                    args[i] = dependency;
+                }
+            }
+            super(...args);
+        }
+    };
+}
+

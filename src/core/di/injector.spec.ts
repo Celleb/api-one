@@ -10,7 +10,7 @@ const Injector = require('../dist/core/di/injector').Injector;
 const expect = chai.expect;
 
 class Car {
-    constructor(private options?: any) {
+    constructor(public options?: any) {
         this.options = [4, 6];
     }
 }
@@ -149,8 +149,13 @@ describe('Injector', function () {
                 return new Car();
             });
             injector.register({ provide: Car, useFactory: factory, multi: true });
-            expect(injector.inject('Car')).to.be.an.instanceof(Car);
-            expect(factory.calledOnce).to.be.ok;
+            const car = injector.inject('Car');
+            const car2 = injector.inject('Car');
+            expect(car).to.be.an.instanceof(Car);
+            expect(car2).to.be.an.instanceOf(Car);
+            car.options = 4;
+            expect(car).to.not.eql(car2);
+            expect(factory.called).to.be.ok;
         });
         it('should return a ReferenceError for unregistered injectables', function () {
             expect(() => {
@@ -194,6 +199,15 @@ describe('Injector', function () {
             expect(() => {
                 injector.get('engine');
             }).to.throw(ReferenceError, 'Dependency does not exist.');
+        });
+    });
+    describe('Injector.clear', function () {
+        it('should remove all providers when Injector.clear() is called', function () {
+            injector.register(Car);
+            injector.clear();
+            expect(injector.singletons).to.be.empty;
+            expect(injector.factories).to.be.empty;
+            expect(() => injector.inject(Car)).to.throw(ReferenceError, 'Dependency does not exist.');
         });
     });
 });

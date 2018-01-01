@@ -1,6 +1,5 @@
 'use strict';
-import { Provider, ClassProvider, ValueProvider, FactoryProvider } from '../di';
-import { Constructor } from '../';
+import { Providers, ClassProvider, ValueProvider, FactoryProvider, Constructor } from '../';
 
 export class Injector {
     private singletons: { [key: string]: any };
@@ -17,13 +16,13 @@ export class Injector {
      * @param {Constructor | Provider } providers - A Class or a provider object
      * @throws {TypeError} - Throws TypeError for invalid providers.
      */
-    register<T extends Constructor, K extends Provider>(providers: T | K | T[] | K[]): void {
+    register<T extends Constructor, K extends Providers>(providers: T | K | T[] | K[]): void {
         if (Array.isArray(providers)) {
             return this.registerMultiple(providers);
         }
 
         if (typeof providers === 'object' && providers.provide) {
-            if (!(typeof (<Provider>providers).provide === 'string' || this.isConstructor(providers))) {
+            if (!(typeof (<Providers>providers).provide === 'string' || this.isConstructor(providers))) {
                 throw new TypeError('`Provider.provide` must be a string or a Class');
             }
             if ((<ClassProvider>providers).useClass) {
@@ -58,7 +57,7 @@ export class Injector {
      * Registers multiple providers
      * @param providers
      */
-    private registerMultiple<T extends Constructor, K extends Provider>(providers: T[] | K[]): void {
+    private registerMultiple<T extends Constructor, K extends Providers>(providers: T[] | K[]): void {
         for (let provider of providers) {
             this.register(provider);
         }
@@ -118,7 +117,7 @@ export class Injector {
         return !!Reflect.getOwnMetadata('multi', provider);
     }
 
-    private getName(provider: Provider): string {
+    private getName(provider: Providers): string {
         return (typeof provider.provide === 'string') ? provider.provide : provider.provide.prototype.constructor.name;
     }
 
@@ -163,5 +162,12 @@ export class Injector {
             return this.get(name);
         }
         throw new ReferenceError('Dependency does not exist.');
+    }
+    /**
+     * Removes all registered providers
+     */
+    clear(): void {
+        this.singletons = {};
+        this.factories = {};
     }
 }

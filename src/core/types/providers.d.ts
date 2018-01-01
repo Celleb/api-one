@@ -18,4 +18,4 @@ export interface ValueProvider extends BaseProvider {
     useValue: any;
 }
 
-export type Provider = ClassProvider | ValueProvider | FactoryProvider;
+export type Providers = ClassProvider | ValueProvider | FactoryProvider;

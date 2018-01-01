@@ -139,8 +139,13 @@ describe('Injector', function () {
                 return new Car();
             });
             injector.register({ provide: Car, useFactory: factory, multi: true });
-            expect(injector.inject('Car')).to.be.an["instanceof"](Car);
-            expect(factory.calledOnce).to.be.ok;
+            var car = injector.inject('Car');
+            var car2 = injector.inject('Car');
+            expect(car).to.be.an["instanceof"](Car);
+            expect(car2).to.be.an.instanceOf(Car);
+            car.options = 4;
+            expect(car).to.not.eql(car2);
+            expect(factory.called).to.be.ok;
         });
         it('should return a ReferenceError for unregistered injectables', function () {
             expect(function () {
@@ -182,6 +187,15 @@ describe('Injector', function () {
             expect(function () {
                 injector.get('engine');
             }).to["throw"](ReferenceError, 'Dependency does not exist.');
+        });
+    });
+    describe('Injector.clear', function () {
+        it('should remove all providers when Injector.clear() is called', function () {
+            injector.register(Car);
+            injector.clear();
+            expect(injector.singletons).to.be.empty;
+            expect(injector.factories).to.be.empty;
+            expect(function () { return injector.inject(Car); }).to["throw"](ReferenceError, 'Dependency does not exist.');
         });
     });
 });
