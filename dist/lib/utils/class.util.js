@@ -1,10 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var ClassUtil = (function () {
-    function ClassUtil() {
-    }
-    ClassUtil.getClassName = function (item) {
-        var name;
+class ClassUtil {
+    static getClassName(item) {
+        let name;
         try {
             name = item.prototype.constructor.name;
         }
@@ -12,7 +10,6 @@ var ClassUtil = (function () {
             name = item.prototype.constructor.toString().match(/\w+/g)[1];
         }
         return name;
-    };
-    return ClassUtil;
-}());
+    }
+}
 exports.ClassUtil = ClassUtil;

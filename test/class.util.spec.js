@@ -1,5 +1,5 @@
 "use strict";
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", { value: true });
 var chai = require("chai");
 var ClassUtil = require('../dist/lib/utils/class.util').ClassUtil;
 var expect = chai.expect;

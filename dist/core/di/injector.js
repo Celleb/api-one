@@ -1,12 +1,12 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
-var Injector = (function () {
-    function Injector(config) {
+class Injector {
+    constructor(config) {
         this.config = config;
         this.singletons = {};
         this.factories = {};
     }
-    Injector.prototype.register = function (providers) {
+    register(providers) {
         if (Array.isArray(providers)) {
             return this.registerMultiple(providers);
         }
@@ -28,78 +28,77 @@ var Injector = (function () {
             return this.registerSingleton(providers);
         }
         throw new TypeError('Invalid provider(s)');
-    };
-    Injector.prototype.isConstructor = function (provider) {
+    }
+    isConstructor(provider) {
         if (provider.provide) {
             return !!(typeof provider.provide === 'function' && provider.provide.prototype && provider.provide.prototype.constructor);
         }
         return !!(typeof provider === 'function' && provider.prototype && provider.prototype.constructor);
-    };
-    Injector.prototype.registerMultiple = function (providers) {
-        for (var _i = 0, providers_1 = providers; _i < providers_1.length; _i++) {
-            var provider = providers_1[_i];
+    }
+    registerMultiple(providers) {
+        for (let provider of providers) {
             this.register(provider);
         }
-    };
-    Injector.prototype.registerSingleton = function (provider, name) {
+    }
+    registerSingleton(provider, name) {
         name = name ? name : provider.prototype.constructor.name;
         this.singletons[name] = this.factory(provider);
         this.factories[name] = this.factory.bind(this, provider);
         return;
-    };
-    Injector.prototype.registerSingletonFactory = function (factory, name) {
+    }
+    registerSingletonFactory(factory, name) {
         this.singletons[name] = factory(this);
         this.factories[name] = factory;
         return;
-    };
-    Injector.prototype.registerMultiInstance = function (name, factory) {
+    }
+    registerMultiInstance(name, factory) {
         this.factories[name] = factory;
         return;
-    };
-    Injector.prototype.useClass = function (provider) {
-        var name = this.getName(provider);
+    }
+    useClass(provider) {
+        const name = this.getName(provider);
         return (provider.multi || this.isMulti(provider.useClass)) ? this.registerMultiInstance(name, this.factory.bind(this, provider.useClass))
             : this.registerSingleton(provider.useClass, name);
-    };
-    Injector.prototype.useValue = function (provider) {
+    }
+    useValue(provider) {
         if (typeof provider.provide !== 'string') {
             throw new TypeError('`provide` must be a string when providing a value.');
         }
         return provider.multi ? this.registerMultiInstance(name, this.factory.bind(this, provider.useValue))
             : this.registerSingleton(provider.useValue, provider.provide);
-    };
-    Injector.prototype.useFactory = function (provider) {
+    }
+    useFactory(provider) {
         if (typeof provider.useFactory !== 'function') {
             throw new TypeError('Invalid factory, a factory must be a function.');
         }
-        var name = this.getName(provider);
+        const name = this.getName(provider);
         return provider.multi ? this.registerMultiInstance(name, provider.useFactory)
             : this.registerSingletonFactory(provider.useFactory, name);
-    };
-    Injector.prototype.isMulti = function (provider) {
+    }
+    isMulti(provider) {
         return !!Reflect.getOwnMetadata('multi', provider);
-    };
-    Injector.prototype.getName = function (provider) {
+    }
+    getName(provider) {
         return (typeof provider.provide === 'string') ? provider.provide : provider.provide.prototype.constructor.name;
-    };
-    Injector.prototype.getKey = function (key) {
+    }
+    getKey(key) {
         return (typeof key === 'string') ? key : key.prototype.constructor.name;
-    };
-    Injector.prototype.factory = function (provider) {
+    }
+    factory(provider) {
         if (this.isConstructor(provider) && provider.prototype.constructor) {
             return new provider();
         }
         return provider;
-    };
-    Injector.prototype.get = function (key) {
-        var name = this.getKey(key);
+    }
+    get(key) {
+        const name = this.getKey(key);
         if (!this.factories.hasOwnProperty(name)) {
             throw ReferenceError('Dependency does not exist.');
         }
         return this.factories[name](this);
-    };
-    Injector.prototype.inject = function (key) {
-        var name = this.getKey(key);
+    }
+    inject(key) {
+        const name = this.getKey(key);
         if (this.singletons.hasOwnProperty(name)) {
             return this.singletons[name];
         }
@@ -107,11 +106,10 @@ var Injector = (function () {
             return this.get(name);
         }
         throw new ReferenceError('Dependency does not exist.');
-    };
-    Injector.prototype.clear = function () {
+    }
+    clear() {
         this.singletons = {};
         this.factories = {};
-    };
-    return Injector;
-}());
+    }
+}
 exports.Injector = Injector;

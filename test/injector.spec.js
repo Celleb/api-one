@@ -1,5 +1,5 @@
 'use strict';
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", { value: true });
 var chai = require("chai");
 var sinon = require("sinon");
 require("reflect-metadata");
@@ -78,11 +78,11 @@ describe('Injector', function () {
             };
             expect(function () {
                 injector.register({ provide: Car, useValue: value });
-            }).to["throw"](TypeError, '`provide` must be a string when providing a value.');
+            }).to.throw(TypeError, '`provide` must be a string when providing a value.');
         });
         it('should throw an error if provided with an invalid factory', function () {
-            expect(function () { return injector.register('factory'); }).to["throw"](TypeError);
-            expect(function () { return injector.register(['']); }).to["throw"](TypeError);
+            expect(function () { return injector.register('factory'); }).to.throw(TypeError);
+            expect(function () { return injector.register(['']); }).to.throw(TypeError);
         });
         it('should register a provider given a provider object with useFactory', function () {
             var factory = sinon.spy(function () {
@@ -109,7 +109,7 @@ describe('Injector', function () {
         it('should throw an exception given a provider object with useFactory and an invalid factory', function () {
             expect(function () {
                 injector.register({ provide: Car, useFactory: 'string' });
-            }).to["throw"](TypeError, 'Invalid factory, a factory must be a function.');
+            }).to.throw(TypeError, 'Invalid factory, a factory must be a function.');
         });
     });
     describe('Injector.inject', function () {
@@ -120,7 +120,7 @@ describe('Injector', function () {
         });
         it('should return the provider when `inject` is called with a class parameter', function () {
             injector.register(Car);
-            expect(injector.inject(Car)).to.be.an["instanceof"](Car);
+            expect(injector.inject(Car)).to.be.an.instanceof(Car);
         });
         it('should return a value provider when requested for one', function () {
             var value = {
@@ -132,7 +132,7 @@ describe('Injector', function () {
         });
         it('should return the provider when `inject` is called with a string parameter', function () {
             injector.register(Car);
-            expect(injector.inject('Car')).to.be.an["instanceof"](Car);
+            expect(injector.inject('Car')).to.be.an.instanceof(Car);
         });
         it('should call the factory and return the provider when requesting a multi instance provider with a factory.', function () {
             var factory = sinon.spy(function () {
@@ -141,7 +141,7 @@ describe('Injector', function () {
             injector.register({ provide: Car, useFactory: factory, multi: true });
             var car = injector.inject('Car');
             var car2 = injector.inject('Car');
-            expect(car).to.be.an["instanceof"](Car);
+            expect(car).to.be.an.instanceof(Car);
             expect(car2).to.be.an.instanceOf(Car);
             car.options = 4;
             expect(car).to.not.eql(car2);
@@ -150,7 +150,7 @@ describe('Injector', function () {
         it('should return a ReferenceError for unregistered injectables', function () {
             expect(function () {
                 injector.inject('engine');
-            }).to["throw"](ReferenceError, 'Dependency does not exist.');
+            }).to.throw(ReferenceError, 'Dependency does not exist.');
         });
     });
     describe('Injector.get', function () {
@@ -161,7 +161,7 @@ describe('Injector', function () {
         });
         it('should return the provider when `get` is called with a class parameter', function () {
             injector.register(Car);
-            expect(injector.get(Car)).to.be.an["instanceof"](Car);
+            expect(injector.get(Car)).to.be.an.instanceof(Car);
         });
         it('should return a value provider when requested for one', function () {
             var value = {
@@ -173,20 +173,20 @@ describe('Injector', function () {
         });
         it('should return the provider when `get` is called with a string parameter', function () {
             injector.register(Car);
-            expect(injector.get('Car')).to.be.an["instanceof"](Car);
+            expect(injector.get('Car')).to.be.an.instanceof(Car);
         });
         it('should call the factory and return the provider when requesting a multi instance provider with a factory.', function () {
             var factory = sinon.spy(function (inject) {
                 return new Car();
             });
             injector.register({ provide: Car, useFactory: factory, multi: true });
-            expect(injector.get('Car')).to.be.an["instanceof"](Car);
+            expect(injector.get('Car')).to.be.an.instanceof(Car);
             expect(factory.calledWith(injector)).to.be.ok;
         });
         it('should return a ReferenceError for unregistered providers', function () {
             expect(function () {
                 injector.get('engine');
-            }).to["throw"](ReferenceError, 'Dependency does not exist.');
+            }).to.throw(ReferenceError, 'Dependency does not exist.');
         });
     });
     describe('Injector.clear', function () {
@@ -195,7 +195,7 @@ describe('Injector', function () {
             injector.clear();
             expect(injector.singletons).to.be.empty;
             expect(injector.factories).to.be.empty;
-            expect(function () { return injector.inject(Car); }).to["throw"](ReferenceError, 'Dependency does not exist.');
+            expect(function () { return injector.inject(Car); }).to.throw(ReferenceError, 'Dependency does not exist.');
         });
     });
 });

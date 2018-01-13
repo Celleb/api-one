@@ -14,6 +14,8 @@ gulp.task('scripts', () => {
 
 gulp.task('tests', () => {
     return gulp.src('src/**/*.spec.ts').pipe(ts({
+        target: "es5",
+        module: "CommonJS",
         experimentalDecorators: true,
         emitDecoratorMetadata: true,
         declaration: false,

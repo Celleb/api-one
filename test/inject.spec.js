@@ -8,7 +8,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", { value: true });
 var chai = require("chai");
 var sinon = require("sinon");
 require("reflect-metadata");
@@ -43,7 +43,7 @@ describe('Inject decorator', function () {
         }());
         expect(function () {
             var car = new Car(undefined);
-        }).to["throw"](ReferenceError, 'Dependency does not exist.');
+        }).to.throw(ReferenceError, 'Dependency does not exist.');
     });
     it('should throw an error when trying to inject an unregistered dependency into a property', function () {
         expect(function () {
@@ -53,10 +53,10 @@ describe('Inject decorator', function () {
                 __decorate([
                     Inject(),
                     __metadata("design:type", Logger)
-                ], Car.prototype, "log");
+                ], Car.prototype, "log", void 0);
                 return Car;
             }());
-        }).to["throw"](ReferenceError, 'Dependency does not exist.');
+        }).to.throw(ReferenceError, 'Dependency does not exist.');
     });
     it('should inject a dependencies into a property', function () {
         DI.register(Logger);
@@ -66,11 +66,11 @@ describe('Inject decorator', function () {
             __decorate([
                 Inject(),
                 __metadata("design:type", Logger)
-            ], Car.prototype, "log");
+            ], Car.prototype, "log", void 0);
             return Car;
         }());
         var car = new Car();
-        expect(car.log).to.be.an["instanceof"](Logger);
+        expect(car.log).to.be.an.instanceof(Logger);
         car.log.info('Holla');
         expect(log.calledOnce).to.be.ok;
     });
@@ -94,7 +94,7 @@ describe('Inject decorator', function () {
             return Car;
         }());
         var car = new Car(undefined, undefined);
-        expect(car.logger).to.be.an["instanceof"](Logger);
+        expect(car.logger).to.be.an.instanceof(Logger);
         expect(car.fork).to.be.an.instanceOf(Fork);
         car.logger.info('Holla');
     });

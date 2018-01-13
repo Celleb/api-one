@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var _1 = require("./");
+const _1 = require("./");
 require("reflect-metadata");
 function Provider(options) {
     return function (target) {
