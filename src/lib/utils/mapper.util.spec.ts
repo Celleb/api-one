@@ -103,7 +103,7 @@ describe('Mapper', function () {
         });
     });
 
-    describe('#inverter', function () {
+    describe('#invert', function () {
         it('inverts dictionary keys', function () {
             const dict = {
                 firstName: 'name',
@@ -113,7 +113,7 @@ describe('Mapper', function () {
                 name: 'firstName',
                 surname: 'lastName'
             };
-            const results = Mapper.inverter(dict);
+            const results = Mapper.invert(dict);
             expect(results).to.eql(expected);
         });
 
@@ -134,7 +134,7 @@ describe('Mapper', function () {
                     memb: 'members'
                 }
             };
-            const results = Mapper.inverter(dict);
+            const results = Mapper.invert(dict);
             expect(results).to.eql(expected);
         });
     });

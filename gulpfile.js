@@ -20,6 +20,10 @@ gulp.task('tests', () => {
         emitDecoratorMetadata: true,
         declaration: false,
         moduleResolution: "node",
+        lib: [
+            "es5",
+            "es2015"
+        ]
     })).pipe(flatten()).pipe(gulp.dest('test'))
 })
 

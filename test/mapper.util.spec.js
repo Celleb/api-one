@@ -87,7 +87,7 @@ describe('Mapper', function () {
             expect(Mapper.map(data, dictionary)).to.eql(expectedData);
         });
     });
-    describe('#inverter', function () {
+    describe('#invert', function () {
         it('inverts dictionary keys', function () {
             var dict = {
                 firstName: 'name',
@@ -97,7 +97,7 @@ describe('Mapper', function () {
                 name: 'firstName',
                 surname: 'lastName'
             };
-            var results = Mapper.inverter(dict);
+            var results = Mapper.invert(dict);
             expect(results).to.eql(expected);
         });
         it('inverts nested dictionary keys', function () {
@@ -117,7 +117,7 @@ describe('Mapper', function () {
                     memb: 'members'
                 }
             };
-            var results = Mapper.inverter(dict);
+            var results = Mapper.invert(dict);
             expect(results).to.eql(expected);
         });
     });

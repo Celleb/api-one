@@ -9,6 +9,6 @@
 
 export interface InsertOptions {
     exclude?: string[];
-    tanslate?: boolean;
-    reverse: boolean;
+    translate?: boolean;
+    reverse?: boolean;
 }

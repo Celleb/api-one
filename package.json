@@ -29,6 +29,7 @@
   "devDependencies": {
     "@types/body-parser": "^1.16.8",
     "@types/chai": "^4.0.10",
+    "@types/chai-as-promised": "^7.1.0",
     "@types/compression": "^0.0.35",
     "@types/csurf": "^1.9.35",
     "@types/debug": "^0.0.30",
@@ -43,6 +44,7 @@
     "@types/reflect-metadata": "^0.0.5",
     "@types/sinon": "^4.1.2",
     "chai": "^4.1.2",
+    "chai-as-promised": "^7.1.1",
     "debug": "^3.1.0",
     "gulp": "^3.9.1",
     "gulp-flatten": "^0.3.1",

@@ -6,21 +6,23 @@
  * All rights reserved
  * @license MIT
  */
+import { Data } from '../types';
 import { DI } from '../di';
 
 import * as mongoose from 'mongoose';
 import { ModelDefinition, ModelOptions, Dictionary, Session, InsertOptions, Models } from '../';
+import { Mapper } from '../../lib/utils';
 
 export class Model implements ModelOptions {
     private model: mongoose.Model<any>;
-    dictionary: Dictionary;
-    readExclude?: Array<string>;
-    createExclude?: Array<string>;
-    updateAuthMap?: { [key: string]: string };
-    ownerKey?: string;
-    exclusive?: Array<string>;
-    createAuthMap?: { [key: string]: string };
-    schemaDef: mongoose.SchemaDefinition;
+    dictionary: Dictionary = null;
+    readExclude?: Array<string> = null;
+    createExclude?: Array<string> = null;
+    updateAuthMap?: { [key: string]: string } = null;
+    ownerKey?: string = null;
+    exclusive?: Array<string> = null;
+    createAuthMap?: { [key: string]: string } = null;
+    schemaDef: mongoose.SchemaDefinition = null;
     constructor(model: mongoose.Model<any>, modelDef: ModelDefinition) {
         this.model = model;
         this.schemaDef = modelDef.schema;
@@ -48,25 +50,40 @@ export class Model implements ModelOptions {
         return { [this.ownerKey]: session.uid };
     }
 
-    insert(data: any, options: InsertOptions): Promise<mongoose.Document> {
-        if (options.reverse) {
-            return;
+    insert(data: Data | Data[], options: InsertOptions = {}): Promise<mongoose.Document | mongoose.Document[]> {
+        if (options.reverse && this.dictionary) {
+            data = this.reverse(data);
         }
+        return (this.dictionary && options.translate) ?
+            this.translator(this.model.create(data)) : this.model.create(data);
     }
 
-    reverse(data: { [key: string]: any }, exclude: string[] = [], dictionary?: Dictionary): { [key: string]: any } {
-        dictionary = dictionary || this.dictionary;
-        let reversedData = {};
-        for (let key in this.dictionary) {
-            if (Array.isArray(dictionary[key]) && Array.isArray(data[key])) {
-                reversedData[key] = this.reverse(data[key], [], dictionary);
-            } else {
-                reversedData[key] = data[key];
-            }
-        }
-        return reversedData;
+    private translator(promise: Promise<any>): Promise<mongoose.Document | mongoose.Document[]> {
+        return promise.then(this.translate);
     }
 
+    /**
+     * Converts api keys to database keys.
+     * @param {Data} data - User data
+     * @param {Dictionary} dictionary - Dictionary
+     * @returns {mongoose.Document}
+     */
+    reverse = (data: Data | Data[], dictionary?: Dictionary): Data | Data[] => {
+        dictionary = dictionary ? dictionary : this.dictionary;
+        dictionary = Mapper.invert(dictionary);
+        return Mapper.map(data, dictionary) as mongoose.Document;
+    }
+
+    /**
+     * Converts database keys to api keys
+     * @param {mongoose.Document} data - Data from database
+     * @param {Dictionary} dictionary - Dictionary
+     * @returns {mongoose.Document}
+     */
+    translate = (data: mongoose.Document | mongoose.Document[], dictionary?: Dictionary): mongoose.Document | mongoose.Document[] => {
+        dictionary = dictionary ? dictionary : this.dictionary;
+        return Mapper.map(data, dictionary) as mongoose.Document;
+    }
 
     /**
      * Creates a new Model

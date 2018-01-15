@@ -28,12 +28,12 @@ class Mapper {
             return this.mapper(values, dictionary);
         }) : this.mapper(data, dictionary);
     }
-    static inverter(dictionary) {
+    static invert(dictionary) {
         let invertedDictionary = {};
         for (let key in dictionary) {
             const value = dictionary[key];
             if (_1.$$.isRealObject(value) && value._id) {
-                invertedDictionary[value._id] = this.inverter(_.omit(value, ['_id']));
+                invertedDictionary[value._id] = this.invert(_.omit(value, ['_id']));
                 invertedDictionary[value._id]['_id'] = key;
                 continue;
             }

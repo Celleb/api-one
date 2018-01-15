@@ -5,3 +5,4 @@ function __export(m) {
 Object.defineProperty(exports, "__esModule", { value: true });
 __export(require("./models"));
 __export(require("./schema"));
+__export(require("./model"));
