@@ -7,45 +7,37 @@
  * @license MIT
  */
 'use strict';
-declare var require: any;
-import * as mocha from 'mocha';
-import * as chai from 'chai';
-import * as sinon from 'sinon';
-const Connection = require('../dist/lib/database/connection').Connection;
-const defaultOptions = require('../dist/lib/database/default-options').defaultOptions;
-
-
-const expect = chai.expect;
-
+Object.defineProperty(exports, "__esModule", { value: true });
+var chai = require("chai");
+var ConnectionHelper = require('../dist/lib/database/connection-helper').ConnectionHelper;
+var defaultOptions = require('../dist/lib/database/default-options').defaultOptions;
+var expect = chai.expect;
 describe('Connection', function () {
-
-    it('should have a uri property', function () {
-        const connection = new Connection({});
+    it('have a uri property', function () {
+        var connection = new ConnectionHelper({});
         expect(connection).to.haveOwnProperty('uri').to.eql(null);
     });
     it('should have uri set to the uri value from the config parameter', function () {
-        const config = {
+        var config = {
             name: 'DBName',
             uri: 'mongodb://localhost:27017/DBName'
         };
-        const connection = new Connection(config);
+        var connection = new ConnectionHelper(config);
         expect(connection.uri).to.eql(config.uri);
     });
-
     it('should construct the uri from the given config values', function () {
-        const config = {
+        var config = {
             name: 'DBName',
             host: 'localhost',
             port: 27017,
             queryOptions: 'authSource=admin'
         };
-        const expected = 'mongodb://' + config.host + ':' + config.port + '/' + config.name + '?' + config.queryOptions;
-        const connection = new Connection(config);
+        var expected = 'mongodb://' + config.host + ':' + config.port + '/' + config.name + '?' + config.queryOptions;
+        var connection = new ConnectionHelper(config);
         expect(connection.uri).to.eql(expected);
     });
-
     it('should construct the uri from the given config values with replicaSet', function () {
-        const config = {
+        var config = {
             name: 'DBName',
             host: 'localhost',
             port: 27017,
@@ -58,15 +50,14 @@ describe('Connection', function () {
                 ]
             }
         };
-        const replicaSet = ',localhost2:27017,localhost3:27017';
-        const expected = 'mongodb://' + config.host + ':' + config.port + replicaSet + '/'
+        var replicaSet = ',localhost2:27017,localhost3:27017';
+        var expected = 'mongodb://' + config.host + ':' + config.port + replicaSet + '/'
             + config.name + '?' + config.queryOptions;
-        const connection = new Connection(config);
+        var connection = new ConnectionHelper(config);
         expect(connection.uri).to.eql(expected);
     });
-
     it('should set the default options and override them with options in the config', function () {
-        const config = {
+        var config = {
             name: 'DBName',
             host: 'localhost',
             port: 27017,
@@ -82,15 +73,15 @@ describe('Connection', function () {
                 ]
             }
         };
-        const options = defaultOptions;
+        var options = defaultOptions;
         options.user = config.username;
         options.pass = config.password;
         options.authSource = config.authSource;
         options.replicaSet = config.replicaSet.name;
-        const replicaSet = ',localhost2:27017,localhost3:27017';
-        const expected = 'mongodb://' + config.host + ':' + config.port + replicaSet + '/'
+        var replicaSet = ',localhost2:27017,localhost3:27017';
+        var expected = 'mongodb://' + config.host + ':' + config.port + replicaSet + '/'
             + config.name + '?' + config.queryOptions;
-        const connection = new Connection(config);
+        var connection = new ConnectionHelper(config);
         expect(connection.uri).to.eql(expected);
         expect(connection.options).to.eql(options);
     });

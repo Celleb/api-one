@@ -1,5 +1,5 @@
 /**
- * connection.ts
+ * connection-helper.ts
  *
  * @author Jonas Tomanga <celleb@mrcelleb.com>
  * @copyright (c) 2017 Jonas Tomanga
@@ -12,13 +12,18 @@ import { defaultOptions } from './default-options';
 import * as debug from 'debug';
 
 
-export class Connection {
-    private options: mongoose.ConnectionOptions;
+export class ConnectionHelper {
+    /**
+     * Mongoose connection options
+     */
+    options: mongoose.ConnectionOptions;
     /**
      * Mongodb connection uri string
      */
     uri: string;
-    constructor(private config: DatabaseConfig) {
+    private config: DatabaseConfig;
+    constructor(config: DatabaseConfig) {
+        this.config = config;
         this.setUri();
         this.setOptions();
     }
@@ -71,13 +76,5 @@ export class Connection {
         if (this.config.replicaSet && this.config.replicaSet.name) {
             this.options.replicaSet = this.config.replicaSet.name;
         }
-    }
-
-    /**
-     * Creates and returns a mongoose connection
-     * @returns mongoose connection
-     */
-    connect(): mongoose.Connection {
-        return (new mongoose.Mongoose()).createConnection(this.uri, this.options);
     }
 }

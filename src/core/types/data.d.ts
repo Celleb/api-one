@@ -1,11 +1,11 @@
 /**
- * index.ts
+ * data.d.ts
  *
  * @author Jonas Tomanga <celleb@mrcelleb.com>
  * @copyright (c) 2017 Jonas Tomanga
  * All rights reserved
  * @license MIT
  */
-export * from './class.util';
-export * from './mapper.util';
-export * from './core.util';
+export interface Data {
+    [key: string]: any;
+}

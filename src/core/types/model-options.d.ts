@@ -19,7 +19,7 @@ export interface MiddleWareObject {
     all?: express.Handler;
 }
 export interface ModelOptions {
-    dictionary: Dictionary,
+    dictionary: Dictionary;
     readExclude?: Array<string>;
     createExclude?: Array<string>;
     updateAuthMap?: { [key: string]: string };

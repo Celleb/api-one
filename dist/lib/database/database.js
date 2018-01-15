@@ -1,25 +1,30 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const connection_1 = require("./connection");
+const core_1 = require("../../core");
+const connection_helper_1 = require("./connection-helper");
+const mongoose = require("mongoose");
 const debug = require("debug");
-class Database {
-    constructor(config) {
-        Database.connection = (new connection_1.Connection(config)).connect();
-        this.listen();
+class Database extends mongoose.Connection {
+    constructor(base, config) {
+        super(base);
+        const helper = new connection_helper_1.ConnectionHelper(config);
+        this.open(helper.uri, config.name, config.port, helper.options);
     }
     listen() {
-        Database.connection.on('connect', function () {
+        this.on('connect', function () {
             debug('database connected');
         });
-        Database.connection.on('disconnect', function () {
+        this.on('disconnect', function () {
             debug('database disconnected');
         });
     }
-    static getConnection(config) {
+    static connect(base, config) {
         if (!Database.connection) {
-            (new Database(config));
+            config = config ? config : core_1.DI.inject('DatabaseConfig');
+            base = base ? base : (new mongoose.Mongoose());
+            Database.connection = (new Database(base, config));
         }
         return Database.connection;
     }
 }
-exports.default = Database;
+exports.Database = Database;

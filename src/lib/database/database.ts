@@ -6,31 +6,37 @@
  * All rights reserved
  * @license MIT
  */
-import { DatabaseConfig, Inject } from '../../core';
-import { Connection } from './connection';
+import { DatabaseConfig, DI } from '../../core';
+import { ConnectionHelper } from './connection-helper';
 import * as mongoose from 'mongoose';
 import * as debug from 'debug';
 
-export default class Database {
+export class Database extends mongoose.Connection {
+    /**
+     * Database singleton instance
+     */
     private static connection: mongoose.Connection;
-    private constructor(config: DatabaseConfig) {
-        Database.connection = (new Connection(config)).connect();
-        this.listen();
+    private constructor(base: mongoose.Mongoose, config: DatabaseConfig) {
+        super(base);
+        const helper = new ConnectionHelper(config);
+        this.open(helper.uri, config.name, config.port, helper.options);
     }
 
     private listen() {
-        Database.connection.on('connect', function () {
+        this.on('connect', function () {
             debug('database connected');
         });
 
-        Database.connection.on('disconnect', function () {
+        this.on('disconnect', function () {
             debug('database disconnected');
         });
     }
 
-    static getConnection(config: DatabaseConfig): mongoose.Connection {
+    static connect(base?: mongoose.Mongoose, config?: DatabaseConfig): mongoose.Connection {
         if (!Database.connection) {
-            (new Database(config));
+            config = config ? config : DI.inject('DatabaseConfig');
+            base = base ? base : (new mongoose.Mongoose());
+            Database.connection = (new Database(base, config));
         }
         return Database.connection;
     }

@@ -8,7 +8,7 @@
  */
 'use strict';
 import * as mongoose from 'mongoose';
-import Database from '../../lib/database/database';
+import { Database } from '../../lib/database/database';
 import { ModelOptions, ModelDefinition } from '../types';
 import { DI } from '../di';
 
