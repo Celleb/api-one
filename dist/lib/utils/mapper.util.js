@@ -5,6 +5,9 @@ const _1 = require("./");
 class Mapper {
     static mapper(data, dictionary) {
         let mappedData = {};
+        if (_.isEmpty(dictionary)) {
+            return data;
+        }
         for (let key in data) {
             if (!dictionary.hasOwnProperty(key)) {
                 mappedData[key] = data[key];

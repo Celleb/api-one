@@ -6,9 +6,14 @@
  * All rights reserved
  * @license MIT
  */
-
-export interface InsertOptions {
+import * as mongoose from 'mongoose';
+export interface DataOptions {
     exclude?: string[];
     translate?: boolean;
     reverse?: boolean;
+}
+
+export interface UpdateOptions {
+    data?: DataOptions;
+    query?: mongoose.QueryUpdateOptions;
 }

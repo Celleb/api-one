@@ -9,5 +9,5 @@ export * from './model-definition';
 export * from './@index';
 export * from './schema-add-ons';
 export * from './session';
-export * from './insert-options';
+export * from './data-options';
 export * from './data';

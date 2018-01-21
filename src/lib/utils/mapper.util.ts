@@ -14,6 +14,9 @@ export class Mapper {
 
     static mapper(data: Data, dictionary: Dictionary): Data {
         let mappedData = {};
+        if (_.isEmpty(dictionary)) {
+            return data;
+        }
         for (let key in data) {
             if (!dictionary.hasOwnProperty(key)) {
                 mappedData[key] = data[key];

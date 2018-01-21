@@ -51,8 +51,70 @@ class Model {
         return (this.dictionary && options.translate) ?
             this.translator(this.model.create(data)) : this.model.create(data);
     }
+    create(req, translate) {
+        const options = { translate, reverse: true };
+        this.createAuthMap && this.authMapper(req, this.createAuthMap);
+        return this.insert(req.body, options);
+    }
+    modify(query, data, options = {}) {
+        if (options.data && options.data.reverse && this.dictionary) {
+            data = this.reverse(data);
+        }
+        return (this.dictionary && options.data && options.data.translate) ?
+            this.translator(this.model.findOneAndUpdate(query, data, options.query)) :
+            this.model.findOneAndUpdate(query, data, options.query);
+    }
+    patch(query, req, options = {}) {
+        if (req.$owner) {
+            const owner = this.ownerObject(req.session);
+            query = Object.assign({}, query, owner);
+        }
+        if (req.query && utils_1.$$.strToBool(req.query.current)) {
+            if (!options.query) {
+                options.query = {};
+            }
+            options.query['new'] = true;
+        }
+        return this.modify(query, req.body, options);
+    }
+    patchByID(req) {
+        const options = {
+            data: { translate: true, reverse: true },
+            query: { new: true }
+        };
+        return this.checkID(req) ? this.patch({ _id: req.params.id }, req, options) :
+            Promise.reject(new ReferenceError('Missing parameter: `id`.'));
+    }
+    delete(query, translate) {
+        return (translate && this.dictionary) ? this.translator(this.model.findOneAndRemove(query))
+            : this.model.findOneAndRemove(query);
+    }
+    deleteByID(req) {
+        if (!this.checkID(req)) {
+            return Promise.reject(new ReferenceError('Missing parameter: `id`.'));
+        }
+        return this.delete({ _id: req.params.id }).then(data => {
+            return undefined;
+        });
+    }
     translator(promise) {
         return promise.then(this.translate);
+    }
+    checkID(req) {
+        return !!(req && req.params && req.params.id);
+    }
+    authMapper(req, map) {
+        if (!req.session) {
+            return;
+        }
+        for (let key in map) {
+            if (req.session[key]) {
+                req.body[key] = req.session[key];
+            }
+            else {
+                throw new ReferenceError(key + ' does not exist on session');
+            }
+        }
     }
     static create(name) {
         const models = di_1.DI.inject('Models');

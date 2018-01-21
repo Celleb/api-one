@@ -9,12 +9,42 @@
 
 
 export class CoreUtilities {
-    static isObject(object: any): boolean {
-        return object === Object(object);
+
+    private static falseValues = ['no', 'false'];
+    private static trueValues = ['yes', 'true'];
+
+    /**
+     * Checks if an item is an object
+     * @param {any} item
+     * @returns {boolean}
+     */
+    static isObject(item: any): boolean {
+        return item === Object(item);
     }
 
-    static isRealObject(object: any): boolean {
-        return Array.isArray(object) ? false : this.isObject(object);
+    /**
+     * Checks if an items is an object excluding arrays
+     * @param {any} item
+     * @returns {boolean}
+     */
+    static isRealObject(item: any): boolean {
+        return Array.isArray(item) ? false : this.isObject(item);
+    }
+
+    /**
+     * Converts string values `yes`, `true` to boolean true and `no`, `false` to boolean false
+     */
+    static strToBool(value: string | boolean): boolean {
+        if (value === true || value === false) {
+            return value;
+        }
+        if (this.trueValues.indexOf(value) !== -1) {
+            return true;
+        }
+        if (this.falseValues.indexOf(value) !== -1) {
+            return false;
+        }
+        return null;
     }
 }
 export const $$ = CoreUtilities;

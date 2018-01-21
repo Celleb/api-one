@@ -38,4 +38,26 @@ describe('CoreUtilities', function () {
             expect($$.isRealObject([])).to.not.be.ok;
         });
     });
+    describe('#strToBool', function () {
+        it('converts string `yes` to boolean true', function () {
+            expect($$.strToBool('yes')).to.eql(true);
+        });
+        it('converts string `true` to boolean true', function () {
+            expect($$.strToBool('true')).to.eql(true);
+        });
+        it('converts string `false` to boolean false', function () {
+            expect($$.strToBool('false')).to.eql(false);
+        });
+        it('converts string `no` to boolean false', function () {
+            expect($$.strToBool('no')).to.eql(false);
+        });
+        it('converts any other string to to null', function () {
+            expect($$.strToBool('nnn')).to.eql(null);
+            expect($$.strToBool('0')).to.eql(null);
+        });
+        it('returns the boolean if given a boolean', function () {
+            expect($$.strToBool(true)).to.eql(true);
+            expect($$.strToBool(false)).to.eql(false);
+        });
+    });
 });
