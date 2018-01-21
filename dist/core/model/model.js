@@ -56,13 +56,21 @@ class Model {
         this.createAuthMap && this.authMapper(req, this.createAuthMap);
         return this.insert(req.body, options);
     }
+    findOne(query, options = {}) {
+        let lean;
+        if (options.lean) {
+            lean = true;
+        }
+        return ((options.translate && this.dictionary) ? this.translator(this.model.findOne(query, { lean }))
+            : this.model.findOne(query, { lean }));
+    }
     modify(query, data, options = {}) {
         if (options.data && options.data.reverse && this.dictionary) {
             data = this.reverse(data);
         }
-        return (this.dictionary && options.data && options.data.translate) ?
+        return ((this.dictionary && options.data && options.data.translate) ?
             this.translator(this.model.findOneAndUpdate(query, data, options.query)) :
-            this.model.findOneAndUpdate(query, data, options.query);
+            this.model.findOneAndUpdate(query, data, options.query));
     }
     patch(query, req, options = {}) {
         if (req.$owner) {
@@ -86,8 +94,8 @@ class Model {
             Promise.reject(new ReferenceError('Missing parameter: `id`.'));
     }
     delete(query, translate) {
-        return (translate && this.dictionary) ? this.translator(this.model.findOneAndRemove(query))
-            : this.model.findOneAndRemove(query);
+        return ((translate && this.dictionary) ? this.translator(this.model.findOneAndRemove(query))
+            : this.model.findOneAndRemove(query));
     }
     deleteByID(req) {
         if (!this.checkID(req)) {

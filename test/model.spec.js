@@ -38,7 +38,14 @@ var mainData = {
         members: 5
     }
 };
-var findOneAndUpdate = sinon.spy(function (query, update) {
+var transData = {
+    name: 'Jon',
+    surname: 'Manga',
+    family: {
+        memb: 5
+    }
+};
+var findOneAndUpdate = function (query, update) {
     var data = __assign({}, mainData);
     for (var key in update) {
         if (data.hasOwnProperty(key)) {
@@ -46,28 +53,36 @@ var findOneAndUpdate = sinon.spy(function (query, update) {
         }
     }
     return Promise.resolve(data);
-});
-var findOneAndRemove = sinon.spy(function (query) {
+};
+var findOne = function (query, options) {
     return Promise.resolve(mainData);
-});
-var create = sinon.spy(function (docs) {
+};
+var findOneAndRemove = function (query) {
+    return Promise.resolve(mainData);
+};
+var create = function (docs) {
     return Promise.resolve(docs);
-});
+};
 var Models = {
-    model: sinon.spy(function () {
+    model: function () {
+        var args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            args[_i] = arguments[_i];
+        }
         return {
             create: create,
+            findOne: findOne,
             findOneAndUpdate: findOneAndUpdate,
             findOneAndRemove: findOneAndRemove
         };
-    }),
-    modelDef: sinon.spy(function (model) {
+    },
+    modelDef: function (model) {
         return {
             options: {
                 dictionary: dictionary
             }
         };
-    })
+    }
 };
 describe('Model', function () {
     beforeEach(function () {
@@ -75,16 +90,20 @@ describe('Model', function () {
         DI.register({
             provide: 'Models', useValue: Models
         });
-        Models.model.reset();
-        Models.modelDef.reset();
     });
     describe('#create', function () {
         it('creates a new instance of model', function () {
-            var model = Model.create('cars');
+            sinon.spy(Models, 'model');
+            sinon.spy(Models, 'modelDef');
+            var model = Model.create('users');
             expect(model).to.be.an.instanceOf(Model);
-            expect(Models.model.calledWith('cars')).to.be.ok;
-            expect(Models.modelDef.calledWith('cars')).to.be.ok;
+            expect(Models.model.calledWith('users')).to.be.ok;
+            expect(Models.modelDef.calledWith('users')).to.be.ok;
             expect(model.dictionary).eql(dictionary);
+            after(function () {
+                Models.model.restore();
+                Models.modelDef.restore();
+            });
         });
     });
     describe('.reverse', function () {
@@ -103,7 +122,7 @@ describe('Model', function () {
                     members: 5
                 }
             };
-            var model = Model.create('cars');
+            var model = Model.create('users');
             var results = model.reverse(data);
             expect(results).to.eql(expectedData);
         });
@@ -130,7 +149,7 @@ describe('Model', function () {
                     members: 5
                 }
             };
-            var model = Model.create('cars');
+            var model = Model.create('users');
             var results = model.reverse(data, dict);
             expect(results).to.eql(expectedData);
         });
@@ -151,7 +170,7 @@ describe('Model', function () {
                     memb: 5
                 }
             };
-            var model = Model.create('cars');
+            var model = Model.create('users');
             var results = model.translate(data);
             expect(results).to.eql(expectedData);
         });
@@ -178,7 +197,7 @@ describe('Model', function () {
                     members: 5
                 }
             };
-            var model = Model.create('cars');
+            var model = Model.create('users');
             var results = model.translate(data, dict);
             expect(results).to.eql(expectedData);
         });
@@ -192,7 +211,7 @@ describe('Model', function () {
                     members: 5
                 }
             };
-            var model = Model.create('cars');
+            var model = Model.create('users');
             return expect(model.insert(data)).to.eventually.eql(data);
         });
         it('inserts a new document into the database without reversing and translating given an empty dictionary', function () {
@@ -203,7 +222,7 @@ describe('Model', function () {
                     members: 5
                 }
             };
-            var model = Model.create('cars');
+            var model = Model.create('users');
             model.dictionary = {};
             return expect(model.insert(data, { translate: true, reverse: true })).to.eventually.eql(data);
         });
@@ -222,7 +241,7 @@ describe('Model', function () {
                     members: 5
                 }
             };
-            var model = Model.create('cars');
+            var model = Model.create('users');
             return expect(model.insert(data, { reverse: true })).to.eventually.eql(expectedData);
         });
         it('reverse data keys and inserts a new document into the database and translates the returned data keys', function () {
@@ -233,7 +252,7 @@ describe('Model', function () {
                     memb: 5
                 }
             };
-            var model = Model.create('cars');
+            var model = Model.create('users');
             return expect(model.insert(data, { reverse: true, translate: true })).to.eventually.eql(data);
         });
         it('inserts a new document into the database and translates the returned data keys', function () {
@@ -251,7 +270,7 @@ describe('Model', function () {
                     members: 5
                 }
             };
-            var model = Model.create('cars');
+            var model = Model.create('users');
             return expect(model.insert(data, { translate: true })).to.eventually.eql(expectedData);
         });
         it('reverse data keys and inserts a collection of documents into the database and translates the returned data keys', function () {
@@ -270,7 +289,7 @@ describe('Model', function () {
                     }
                 }
             ];
-            var model = Model.create('cars');
+            var model = Model.create('users');
             return expect(model.insert(data, { reverse: true, translate: true })).to.eventually.eql(data);
         });
     });
@@ -290,7 +309,7 @@ describe('Model', function () {
                     memb: 5
                 }
             };
-            var model = Model.create('cars');
+            var model = Model.create('users');
             return expect(model.create({ body: data })).to.eventually.eql(expectedData);
         });
         it('translates the data keys and inserts a new document into the database', function () {
@@ -301,7 +320,7 @@ describe('Model', function () {
                     memb: 5
                 }
             };
-            var model = Model.create('cars');
+            var model = Model.create('users');
             return expect(model.create({ body: data }, true)).to.eventually.eql(data);
         });
         it('extracts data from session and inserts a new document into the database', function () {
@@ -313,7 +332,7 @@ describe('Model', function () {
                 }
             };
             var expectedData = __assign({}, data, { uid: 4 });
-            var model = Model.create('cars');
+            var model = Model.create('users');
             model.createAuthMap = {
                 uid: 'uid'
             };
@@ -322,14 +341,17 @@ describe('Model', function () {
     });
     describe('.modify', function () {
         it('passes on the query, data and query-update-options to db method', function () {
-            findOneAndUpdate.reset();
             var data = {};
-            var model = Model.create('cars');
+            var model = Model.create('users');
             var options = {
                 query: { new: true }
             };
+            sinon.spy(model.model, 'findOneAndUpdate');
             model.modify({}, data, options);
-            expect(findOneAndUpdate.calledWith({}, data, options.query)).to.be.ok;
+            expect(model.model.findOneAndUpdate.calledWith({}, data, options.query)).to.be.ok;
+            after(function () {
+                model.model.findOneAndUpdate.restore();
+            });
         });
         it('modifies data without key translation or reversal', function () {
             var data = {
@@ -343,7 +365,7 @@ describe('Model', function () {
                     members: 5
                 }
             };
-            var model = Model.create('cars');
+            var model = Model.create('users');
             return expect(model.modify({}, data)).to.eventually.eql(expectedData);
         });
         it('reverse keys and modifies data', function () {
@@ -358,7 +380,7 @@ describe('Model', function () {
                     members: 5
                 }
             };
-            var model = Model.create('cars');
+            var model = Model.create('users');
             var options = {
                 data: {
                     reverse: true
@@ -378,7 +400,7 @@ describe('Model', function () {
                     memb: 5
                 }
             };
-            var model = Model.create('cars');
+            var model = Model.create('users');
             var options = {
                 data: {
                     reverse: true,
@@ -407,7 +429,7 @@ describe('Model', function () {
                     memb: 5
                 }
             };
-            var model = Model.create('cars');
+            var model = Model.create('users');
             sinon.spy(model, 'modify');
             after(function () {
                 model.modify.restore();
@@ -429,7 +451,7 @@ describe('Model', function () {
             var match = {
                 id: 1
             };
-            var model = Model.create('cars');
+            var model = Model.create('users');
             model.ownerKey = '_id';
             sinon.spy(model, 'modify');
             model.patch(match, req, options);
@@ -451,7 +473,7 @@ describe('Model', function () {
             var match = {
                 id: 1
             };
-            var model = Model.create('cars');
+            var model = Model.create('users');
             model.ownerKey = '_id';
             sinon.spy(model, 'modify');
             model.patch(match, req, options);
@@ -473,7 +495,7 @@ describe('Model', function () {
             var match = {
                 id: 1
             };
-            var model = Model.create('cars');
+            var model = Model.create('users');
             expect(function () { model.patch(match, req, options); }).to.throw(ReferenceError, 'Owner key is undefined or null.');
         });
     });
@@ -492,7 +514,7 @@ describe('Model', function () {
                     memb: 5
                 }
             };
-            var model = Model.create('cars');
+            var model = Model.create('users');
             sinon.spy(model, 'patch');
             after(function () {
                 model.patch.restore();
@@ -502,30 +524,23 @@ describe('Model', function () {
             return expect(results).to.eventually.eql(expectedData);
         });
         it('thorws a ReferenceError if req.param.id is missing', function () {
-            var model = Model.create('cars');
+            var model = Model.create('users');
             return expect(model.patchByID({})).to.eventually.be.rejectedWith(ReferenceError, 'Missing parameter: `id`.');
         });
     });
     describe('.delete', function () {
         it('removes the document(s) from the database and returns it', function () {
-            var model = Model.create('cars');
+            var model = Model.create('users');
             return expect(model.delete({ _id: 3 })).to.eventually.eql(mainData);
         });
         it('removes the document(s) from the database returns a translated document', function () {
-            var model = Model.create('cars');
-            var expectedData = {
-                name: 'Jon',
-                surname: 'Manga',
-                family: {
-                    memb: 5
-                }
-            };
-            return expect(model.delete({ _id: 3 }, true)).to.eventually.eql(expectedData);
+            var model = Model.create('users');
+            return expect(model.delete({ _id: 3 }, true)).to.eventually.eql(transData);
         });
     });
     describe('.deleteByID', function () {
         it('removes the document that matches the id in req.params', function () {
-            var model = Model.create('cars');
+            var model = Model.create('users');
             var req = {
                 params: { id: 5 }
             };
@@ -538,12 +553,24 @@ describe('Model', function () {
             return expect(results).to.eventually.eql(undefined);
         });
         it('reject with ReferenceError when `req.params.id` is missing', function () {
-            var model = Model.create('cars');
+            var model = Model.create('users');
             return expect(model.deleteByID({})).to.eventually.rejectedWith(ReferenceError, 'Missing parameter: `id`.');
         });
     });
-    describe('.find', function () {
-    });
-    after(function () {
+    describe('.findOne', function () {
+        it('returns single document from the db that matches the provided query', function () {
+            var model = Model.create('users');
+            return expect(model.findOne({ _id: 2 })).to.eventually.eql(mainData);
+        });
+        it('passes on the options to the models findOne function', function () {
+            var model = Model.create('users');
+            sinon.spy(model.model, 'findOne');
+            model.findOne({}, { lean: true });
+            expect(model.model.findOne.calledWith({}, { lean: true })).to.be.ok;
+        });
+        it('returns a single document from the database that matches the provided query', function () {
+            var model = Model.create('users');
+            return expect(model.findOne({}, { translate: true })).to.eventually.eql(transData);
+        });
     });
 });

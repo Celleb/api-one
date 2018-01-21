@@ -17,3 +17,8 @@ export interface UpdateOptions {
     data?: DataOptions;
     query?: mongoose.QueryUpdateOptions;
 }
+
+export interface FindOptions {
+    translate?: boolean,
+    lean?: boolean
+}

@@ -11,7 +11,7 @@ import { DI } from '../di';
 
 import * as mongoose from 'mongoose';
 import * as express from 'express';
-import { ModelDefinition, ModelOptions, Dictionary, Session, DataOptions, Models, UpdateOptions } from '../';
+import { ModelDefinition, ModelOptions, Dictionary, Session, DataOptions, Models, UpdateOptions, FindOptions } from '../';
 import { Mapper, $$ } from '../../lib/utils';
 
 export class Model implements ModelOptions {
@@ -38,6 +38,11 @@ export class Model implements ModelOptions {
         }
     }
 
+    /**
+     * Creates and returns an owner match object from the session.
+     * @param {Session} session
+     * @returns {Data}
+     */
     ownerObject(session: Session): { [key: string]: any } {
         if (!this.ownerKey) {
             throw new ReferenceError('Owner key is undefined or null.');
@@ -52,7 +57,7 @@ export class Model implements ModelOptions {
     }
 
     /**
-     * Inserts a new document(s) into the database
+     * Inserts a new document(s) into the database.
      * @param {Data | Data[]} data
      * @param {InsertOptions} options
      * @returns {mongoose.Document | mongoose.Document[]}
@@ -65,11 +70,27 @@ export class Model implements ModelOptions {
             this.translator(this.model.create(data)) : this.model.create(data);
     }
 
+    /**
+     * Inserts a new document(s) into the database from the request body.
+     * @param {express.Request} req - Express request object.
+     * @param {boolean} translate - Flag to translate document keys from database keys to api keys.
+     * @returns {Promise<mongoose.Document | mongoose.Document[]>}
+     */
     create(req: express.Request, translate?: boolean): Promise<mongoose.Document | mongoose.Document[]> {
         const options: DataOptions = { translate, reverse: true };
         this.createAuthMap && this.authMapper(req, this.createAuthMap);
         return this.insert(req.body, options);
     }
+
+    findOne(query: object, options: FindOptions = {}): Promise<mongoose.Document> {
+        let lean: boolean;
+        if (options.lean) {
+            lean = true;
+        }
+        return ((options.translate && this.dictionary) ? this.translator(this.model.findOne(query, { lean }))
+            : this.model.findOne(query, { lean })) as any;
+    }
+
 
     /**
      * Modifies a document in the db
@@ -78,13 +99,13 @@ export class Model implements ModelOptions {
      * @param {UpdateOptions} options - Update options
      * @returns {Promise<any>}
      */
-    modify(query: object, data: Data | Data[], options: UpdateOptions = {}): any {
+    modify(query: object, data: Data | Data[], options: UpdateOptions = {}): Promise<mongoose.Document> {
         if (options.data && options.data.reverse && this.dictionary) {
             data = this.reverse(data);
         }
-        return (this.dictionary && options.data && options.data.translate) ?
+        return ((this.dictionary && options.data && options.data.translate) ?
             this.translator(this.model.findOneAndUpdate(query, data, options.query)) :
-            this.model.findOneAndUpdate(query, data, options.query);
+            this.model.findOneAndUpdate(query, data, options.query)) as Promise<any>;
     }
 
     /**
@@ -92,9 +113,9 @@ export class Model implements ModelOptions {
      * @param {object} query - The query for the document to be matched.
      * @param {express.Request} req - Express request object
      * @param {UpdateOptions} options - Update options
-     * @returns {Promise<any>}
+     * @returns {Promise<mongoose.Document>}
      */
-    patch(query: object, req: express.Request, options: UpdateOptions = {}): Promise<any> {
+    patch(query: object, req: express.Request, options: UpdateOptions = {}): Promise<mongoose.Document> {
         if (req.$owner) {
             const owner = this.ownerObject(req.session);
             query = { ...query, ...owner };
@@ -111,9 +132,9 @@ export class Model implements ModelOptions {
     /**
      * Patches a document match by the id parameter in the route
      * @param {express.Request} req - Express request object
-     * @returns {Promise<any>}
+     * @returns {Promise<mongoose.Document>}
      */
-    patchByID(req: express.Request): Promise<any> {
+    patchByID(req: express.Request): Promise<mongoose.Document> {
         const options = {
             data: { translate: true, reverse: true },
             query: { new: true }
@@ -122,12 +143,23 @@ export class Model implements ModelOptions {
             Promise.reject(new ReferenceError('Missing parameter: `id`.'));
     }
 
-    delete(query: object, translate?: boolean): any {
-        return (translate && this.dictionary) ? this.translator(this.model.findOneAndRemove(query))
-            : this.model.findOneAndRemove(query);
+    /**
+     * Removes a document from the database that matches the query.
+     * @param {object} query - The query for document to be matched.
+     * @param {boolean} translate - Flag to translate document keys from database keys to api keys.
+     * @returns {Promise<mongoose.Document>}
+     */
+    delete(query: object, translate?: boolean): Promise<mongoose.Document> {
+        return ((translate && this.dictionary) ? this.translator(this.model.findOneAndRemove(query))
+            : this.model.findOneAndRemove(query)) as Promise<any>;
     }
 
-    deleteByID(req: express.Request): Promise<any> {
+    /**
+     * Removes a document from the database that matches the id in req.params.
+     * @param {express.Request} req - Express request object.
+     * @returns {Promise<mongoose.Document>}
+     */
+    deleteByID(req: express.Request): Promise<mongoose.Document> {
         if (!this.checkID(req)) {
             return Promise.reject(new ReferenceError('Missing parameter: `id`.'));
         }
@@ -141,6 +173,11 @@ export class Model implements ModelOptions {
         return promise.then(this.translate);
     }
 
+    /**
+     * Checks if the express request object has an id parameter.
+     * @param {express.Request} req - Express request object.
+     * @returns {boolean}
+     */
     private checkID(req: express.Request) {
         return !!(req && req.params && req.params.id);
     }
@@ -168,7 +205,12 @@ export class Model implements ModelOptions {
         return Mapper.map(data, dictionary) as mongoose.Document;
     }
 
-    private authMapper(req: express.Request, map: { [key: string]: any }) {
+    /**
+     * Adds data to the request body from the session guided by the map
+     * @param {express.Request} req - Express request object.
+     * @param map
+     */
+    private authMapper(req: express.Request, map: { [key: string]: any }): void {
         if (!req.session) {
             return;
         }
