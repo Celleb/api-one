@@ -567,10 +567,34 @@ describe('Model', function () {
             sinon.spy(model.model, 'findOne');
             model.findOne({}, { lean: true });
             expect(model.model.findOne.calledWith({}, { lean: true })).to.be.ok;
+            after(function () {
+                model.model.findOne.restore();
+            });
         });
-        it('returns a single document from the database that matches the provided query', function () {
+        it('returns a translated single document from the database that matches the provided query', function () {
             var model = Model.create('users');
             return expect(model.findOne({}, { translate: true })).to.eventually.eql(transData);
+        });
+    });
+    describe('.findOneByID', function () {
+        it('returns a single document that matches the `req.params.id`', function () {
+            var req = {
+                params: {
+                    id: 1
+                }
+            };
+            var model = Model.create('users');
+            sinon.spy(model, 'findOne');
+            var results = model.findOneByID(req);
+            after(function () {
+                model.findOne.restore();
+            });
+            expect(model.findOne.calledWith({ _id: 3 }, { translate: true, lean: true }));
+            return expect(results).to.eventually.eql(transData);
+        });
+        it('throws a ReferenceError is `req.params.id` is undefined', function () {
+            var model = Model.create('users');
+            return expect(model.findOneByID({})).to.eventually.rejectedWith(ReferenceError, 'Missing parameter: `id`.');
         });
     });
 });

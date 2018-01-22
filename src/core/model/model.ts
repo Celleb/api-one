@@ -82,6 +82,12 @@ export class Model implements ModelOptions {
         return this.insert(req.body, options);
     }
 
+    /**
+     * Returns a document that matches the query from the database.
+     * @param {object} query - Query to match
+     * @param {FindOptions} options - Find options
+     * @returns {Promise<mongoose.Document>}
+     */
     findOne(query: object, options: FindOptions = {}): Promise<mongoose.Document> {
         let lean: boolean;
         if (options.lean) {
@@ -89,6 +95,22 @@ export class Model implements ModelOptions {
         }
         return ((options.translate && this.dictionary) ? this.translator(this.model.findOne(query, { lean }))
             : this.model.findOne(query, { lean })) as any;
+    }
+
+    /**
+     * Returns a document with an _id that matches `req.params.id`
+     * @param {express.Request} req - Express Request object.
+     * @returns {Promise.<mongoose.Document>}
+     */
+    findOneByID(req: express.Request): Promise<mongoose.Document> {
+        if (!this.checkID(req)) {
+            return Promise.reject(new ReferenceError('Missing parameter: `id`.'));
+        }
+        const options = {
+            translate: true,
+            lean: true
+        };
+        return this.findOne({ _id: req.params.id }, options);
     }
 
 

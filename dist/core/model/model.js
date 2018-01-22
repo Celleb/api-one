@@ -64,6 +64,16 @@ class Model {
         return ((options.translate && this.dictionary) ? this.translator(this.model.findOne(query, { lean }))
             : this.model.findOne(query, { lean }));
     }
+    findOneByID(req) {
+        if (!this.checkID(req)) {
+            return Promise.reject(new ReferenceError('Missing parameter: `id`.'));
+        }
+        const options = {
+            translate: true,
+            lean: true
+        };
+        return this.findOne({ _id: req.params.id }, options);
+    }
     modify(query, data, options = {}) {
         if (options.data && options.data.reverse && this.dictionary) {
             data = this.reverse(data);
