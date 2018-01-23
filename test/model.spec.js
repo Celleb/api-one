@@ -597,4 +597,48 @@ describe('Model', function () {
             return expect(model.findOneByID({})).to.eventually.rejectedWith(ReferenceError, 'Missing parameter: `id`.');
         });
     });
+    describe('.rollback', function () {
+        it('rolls back inserted content', function () {
+            var model = Model.create('users');
+            sinon.spy(model, 'delete');
+            return expect(model.rollback({ _id: 1 })).to.eventually.eql(null);
+        });
+        it('rolls back updated content', function () {
+            var model = Model.create('users');
+            var data = { firstName: 'James' };
+            var expectedData = __assign({}, mainData, data);
+            return expect(model.rollback(2, data)).to.eventually.eql(expectedData);
+        });
+        it('rolls back updated content with options', function () {
+            var model = Model.create('users');
+            sinon.spy(model, 'modify');
+            var options = {
+                query: { upsert: false }
+            };
+            model.rollback(2, {}, false, {
+                query: { upsert: false }
+            });
+            expect(model.modify.calledWith({ _id: 2 }, {}, options)).to.be.ok;
+        });
+        it('it rolls back deleted content', function () {
+            var model = Model.create('users');
+            var data = {
+                firstName: 'James',
+                lastName: 'Bond',
+                familyTree: {
+                    members: 7
+                }
+            };
+            var options = {
+                query: { upsert: true }
+            };
+            sinon.spy(model, 'modify');
+            after(function () {
+                model.modify.restore();
+            });
+            var results = model.rollback(2, data, true);
+            expect(model.modify.calledWith({ _id: 2 }, data, options)).to.be.ok;
+            return expect(results).to.eventually.eql(data);
+        });
+    });
 });

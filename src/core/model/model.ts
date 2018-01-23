@@ -190,6 +190,26 @@ export class Model implements ModelOptions {
         });
     }
 
+    /**
+     * Roles back changes made to the database.
+     * @param {string|number} id - Document `_id`
+     * @param {Data} data
+     * @param {boolean} insert - A flag to reinsert a document.
+     * @param {UpdateOptions} options
+     * @returns {any}
+     */
+    rollback(id: string | number | null, data?: Data, insert?: boolean, options?: UpdateOptions): any {
+        if (insert && data) {
+            options = { ...{ query: { upsert: true } }, ...options };
+        }
+        if (data) {
+            return this.modify({ _id: id }, data, options);
+        }
+        return this.delete({ _id: id }).then(doc => {
+            return null;
+        });
+    }
+
     /*** Utitilies below */
     private translator<T extends any>(promise: T): Promise<T> {
         return promise.then(this.translate);

@@ -115,6 +115,17 @@ class Model {
             return undefined;
         });
     }
+    rollback(id, data, insert, options) {
+        if (insert && data) {
+            options = Object.assign({ query: { upsert: true } }, options);
+        }
+        if (data) {
+            return this.modify({ _id: id }, data, options);
+        }
+        return this.delete({ _id: id }).then(doc => {
+            return null;
+        });
+    }
     translator(promise) {
         return promise.then(this.translate);
     }
