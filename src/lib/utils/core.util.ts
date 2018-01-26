@@ -46,5 +46,18 @@ export class CoreUtilities {
         }
         return null;
     }
+
+    /**
+     * Splits a string into substrings using the specified seperator, removes spaces and
+     * returns them as an array.
+     * @param string
+     * @param splitter
+     */
+    static split(string: string, splitter: string = ','): Array<string> {
+        splitter = '\\s*' + splitter + '\\s*';
+        const regex = new RegExp(splitter);
+        console.log(regex);
+        return string.split(regex);
+    }
 }
 export const $$ = CoreUtilities;

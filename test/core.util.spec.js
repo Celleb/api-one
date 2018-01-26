@@ -60,4 +60,11 @@ describe('CoreUtilities', function () {
             expect($$.strToBool(false)).to.eql(false);
         });
     });
+    describe('CoreUtilities#split', function () {
+        it('splits a string into an array based on the delimitet', function () {
+            var string = 'food;cars; games';
+            var expected = ['food', 'cars', 'games'];
+            expect($$.split(string, ';')).to.eql(expected);
+        });
+    });
 });

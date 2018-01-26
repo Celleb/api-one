@@ -19,6 +19,12 @@ class CoreUtilities {
         }
         return null;
     }
+    static split(string, splitter = ',') {
+        splitter = '\\s*' + splitter + '\\s*';
+        const regex = new RegExp(splitter);
+        console.log(regex);
+        return string.split(regex);
+    }
 }
 CoreUtilities.falseValues = ['no', 'false'];
 CoreUtilities.trueValues = ['yes', 'true'];
