@@ -170,4 +170,9 @@ export class Injector {
         this.singletons = {};
         this.factories = {};
     }
+
+    exist(provider: string | Constructor): boolean {
+        const name = typeof provider === 'string' ? provider : provider.prototype.constructor.name;
+        return !!(this.singletons.hasOwnProperty(name) || this.factories.hasOwnProperty(name));
+    }
 }

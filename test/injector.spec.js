@@ -198,4 +198,13 @@ describe('Injector', function () {
             expect(function () { return injector.inject(Car); }).to.throw(ReferenceError, 'Dependency does not exist.');
         });
     });
+    describe('Injector.exist', function () {
+        it('checks if a dependency has been registered', function () {
+            injector.clear();
+            injector.register(Car);
+            expect(injector.exist(Car)).to.eql(true);
+            expect(injector.exist('Car')).to.eql(true);
+            expect(injector.exist('Food')).to.eql(false);
+        });
+    });
 });

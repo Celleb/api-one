@@ -111,5 +111,9 @@ class Injector {
         this.singletons = {};
         this.factories = {};
     }
+    exist(provider) {
+        const name = typeof provider === 'string' ? provider : provider.prototype.constructor.name;
+        return !!(this.singletons.hasOwnProperty(name) || this.factories.hasOwnProperty(name));
+    }
 }
 exports.Injector = Injector;
