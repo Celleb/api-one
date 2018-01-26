@@ -15,8 +15,7 @@ export class CoreUtilities {
 
     /**
      * Checks if an item is an object
-     * @param {any} item
-     * @returns {boolean}
+     * @param item
      */
     static isObject(item: any): boolean {
         return item === Object(item);
@@ -24,8 +23,7 @@ export class CoreUtilities {
 
     /**
      * Checks if an items is an object excluding arrays
-     * @param {any} item
-     * @returns {boolean}
+     * @param item
      */
     static isRealObject(item: any): boolean {
         return Array.isArray(item) ? false : this.isObject(item);
