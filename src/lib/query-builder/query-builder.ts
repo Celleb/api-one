@@ -22,13 +22,24 @@ export class QueryBuilder {
 
     /**
      * Creates a limit stage for the aggregation pipeline from the given numberic input.
-     * Strings will be converted to their equivalent numberic values
+     * Strings will be converted to their equivalent numeric values.
      * @param {string| number} limit
      * @returns {object}
      */
     limit(limit: string | number): object {
         const $limit = Number.isInteger(+limit) ? +limit : 1000;
         return { $limit };
+    }
+
+    /**
+     * Creates a skip stage for the aggregation pipeline from the given numeric input.
+     * String will be converted to their equivalent numeric values.
+     * @param {string|number} skip
+     * @returns {object}
+     */
+    skip(skip: string | number): object {
+        const $skip = Number.isInteger(+skip) ? +skip : 0;
+        return { $skip };
     }
 
     static create(schemaDef: mongoose.SchemaDefinition, dictionary?: Dictionary) {

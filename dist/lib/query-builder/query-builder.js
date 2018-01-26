@@ -9,6 +9,10 @@ class QueryBuilder {
         const $limit = Number.isInteger(+limit) ? +limit : 1000;
         return { $limit };
     }
+    skip(skip) {
+        const $skip = Number.isInteger(+skip) ? +skip : 0;
+        return { $skip };
+    }
     static create(schemaDef, dictionary) {
         return new QueryBuilder(schemaDef, dictionary);
     }

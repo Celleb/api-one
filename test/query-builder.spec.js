@@ -32,13 +32,13 @@ function createQb() {
     return QueryBuilder.create(schemaDef, dictionary);
 }
 describe('QueryBuilder', function () {
-    describe('#create', function () {
+    describe('QueryBuilder#create', function () {
         it('creates a new instance of QueryBuilder, ', function () {
             var qb = QueryBuilder.create(schemaDef, dictionary);
             expect(qb).to.instanceOf(QueryBuilder);
         });
     });
-    describe('.limit', function () {
+    describe('QueryBuilder.limit', function () {
         it('creates an aggregation pipeline limit stage object from the given value', function () {
             var qb = createQb();
             var expected = { $limit: 10 };
@@ -50,6 +50,20 @@ describe('QueryBuilder', function () {
             expect(qb.limit(undefined)).to.eql(expected);
             expect(qb.limit('five')).to.eql(expected);
             expect(qb.limit({})).to.eql(expected);
+        });
+    });
+    describe('QueryBuilder.skip', function () {
+        it('creates an aggregation pipeline skip stage object from the given value', function () {
+            var qb = createQb();
+            var expected = { $skip: 10 };
+            expect(qb.skip(10)).to.eql(expected);
+        });
+        it('creates an aggregation pipeline skip stage object using the default value when given an invalid or missing value', function () {
+            var qb = createQb();
+            var expected = { $skip: 0 };
+            expect(qb.skip(undefined)).to.eql(expected);
+            expect(qb.skip('five')).to.eql(expected);
+            expect(qb.skip({})).to.eql(expected);
         });
     });
 });
