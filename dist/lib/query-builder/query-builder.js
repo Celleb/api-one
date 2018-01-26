@@ -5,6 +5,10 @@ class QueryBuilder {
         this.schemaDef = schemaDef;
         this.dictionary = dictionary;
     }
+    limit(limit) {
+        const $limit = Number.isInteger(+limit) ? +limit : 1000;
+        return { $limit };
+    }
     static create(schemaDef, dictionary) {
         return new QueryBuilder(schemaDef, dictionary);
     }

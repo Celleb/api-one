@@ -20,6 +20,17 @@ export class QueryBuilder {
         this.dictionary = dictionary;
     }
 
+    /**
+     * Creates a limit stage for the aggregation pipeline from the given numberic input.
+     * Strings will be converted to their equivalent numberic values
+     * @param {string| number} limit
+     * @returns {object}
+     */
+    limit(limit: string | number): object {
+        const $limit = Number.isInteger(+limit) ? +limit : 1000;
+        return { $limit };
+    }
+
     static create(schemaDef: mongoose.SchemaDefinition, dictionary?: Dictionary) {
         return new QueryBuilder(schemaDef, dictionary);
     }
