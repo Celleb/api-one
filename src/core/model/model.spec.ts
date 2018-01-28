@@ -120,10 +120,10 @@ describe('Model', function () {
         });
         it('reverses api keys to database keys using provided dictionary', function () {
             const dict = {
-                firstName: 'name',
-                lastName: 'surname',
-                familyTree: {
-                    _id: 'family',
+                name: 'firstName',
+                surname: 'lastName',
+                family: {
+                    _id: 'familyTree',
                     members: 'members'
                 }
             };

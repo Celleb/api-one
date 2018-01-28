@@ -5,6 +5,7 @@ const utils_1 = require("../../lib/utils");
 class Model {
     constructor(model, modelDef) {
         this.dictionary = null;
+        this.iDictionary = null;
         this.readExclude = null;
         this.createExclude = null;
         this.updateAuthMap = null;
@@ -13,8 +14,7 @@ class Model {
         this.createAuthMap = null;
         this.schemaDef = null;
         this.reverse = (data, dictionary) => {
-            dictionary = dictionary ? dictionary : this.dictionary;
-            dictionary = utils_1.Mapper.invert(dictionary);
+            dictionary = dictionary ? dictionary : this.iDictionary;
             return utils_1.Mapper.map(data, dictionary);
         };
         this.translate = (data, dictionary) => {
@@ -30,6 +30,9 @@ class Model {
             if (this.hasOwnProperty(option)) {
                 this[option] = modelOptions[option];
             }
+        }
+        if (this.dictionary) {
+            this.iDictionary = utils_1.Mapper.invert(this.dictionary);
         }
     }
     ownerObject(session) {

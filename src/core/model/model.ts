@@ -17,6 +17,7 @@ import { Mapper, $$ } from '../../lib/utils';
 export class Model implements ModelOptions {
     private model: mongoose.Model<any>;
     dictionary: Dictionary = null;
+    iDictionary: Dictionary = null;
     readExclude?: Array<string> = null;
     createExclude?: Array<string> = null;
     updateAuthMap?: { [key: string]: string } = null;
@@ -35,6 +36,9 @@ export class Model implements ModelOptions {
             if (this.hasOwnProperty(option)) {
                 this[option] = modelOptions[option];
             }
+        }
+        if (this.dictionary) {
+            this.iDictionary = Mapper.invert(this.dictionary);
         }
     }
 
@@ -231,8 +235,7 @@ export class Model implements ModelOptions {
      * @returns {mongoose.Document}
      */
     reverse = (data: Data | Data[], dictionary?: Dictionary): Data | Data[] => {
-        dictionary = dictionary ? dictionary : this.dictionary;
-        dictionary = Mapper.invert(dictionary);
+        dictionary = dictionary ? dictionary : this.iDictionary;
         return Mapper.map(data, dictionary) as mongoose.Document;
     }
 
