@@ -91,8 +91,8 @@ export class QueryBuilder {
         if (!dictionary || !dictionary[key]) {
             return null;
         }
-        if ($$.isRealObject(dictionary[key]) && dictionary[key]._id) {
-            return dictionary[key]._id;
+        if ($$.isRealObject(dictionary[key])) {
+            return dictionary[key]._id || null;
         }
         return dictionary[key];
     }
@@ -103,19 +103,16 @@ export class QueryBuilder {
      */
     private sortByItems(sort: string, $sort?): object {
         const values = $$.split(sort, ';');
-        values.forEach(current => {
+        for (let current of values) {
             let [key, value] = $$.split(current, ':');
-            if (key && value && this.sortValues.hasOwnProperty(value) && this.iDictionary.hasOwnProperty(key)) {
-                if ($$.isRealObject(this.iDictionary[key]) && !this.iDictionary[key]._id) {
-                    // skip
-                } else {
-                    $sort = $sort || {};
-                    key = ($$.isRealObject(this.iDictionary[key]) ? this.iDictionary[key]._id : this.iDictionary[key]);
-                    value = this.sortValues[value];
-                    $sort[key] = value;
-                }
+            if (!(key && value && this.sortValues.hasOwnProperty(value))) {
+                continue;
             }
-        });
+            $sort = $sort || {};
+            key = this.dictValue(key, this.iDictionary) || key;
+            value = this.sortValues[value];
+            $sort[key] = value;
+        }
         return $sort ? { $sort } : null;
     }
 

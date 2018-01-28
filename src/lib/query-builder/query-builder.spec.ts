@@ -84,7 +84,7 @@ describe('QueryBuilder', function () {
 
     describe('QueryBuilder.sort', function () {
 
-        it('creates a sort stage for the aggregation pipeline from the given string. (key will be translated)', function () {
+        it('creates a sort stage for the aggregation pipeline from the given string. (translated)', function () {
             const qb = createQb();
             let sort = 'id:asc';
             let expected: any = { $sort: { _id: 1 } };
@@ -94,14 +94,28 @@ describe('QueryBuilder', function () {
             expect(qb.sort(sort)).to.eql(expected);
         });
 
-        it('creates a sort stage for the aggregation pipeline, with multiple sort keys', function () {
+        it('creates a sort stage for the aggregation pipeline, with multiple sort keys (translated)', function () {
             const qb = createQb();
             const sort = 'id:asc;name:desc';
             const expected: any = { $sort: { _id: 1, firstName: -1 } };
             expect(qb.sort(sort)).to.eql(expected);
         });
 
-        it('creates a sort stage for the aggregation pipeline with $natural sort key when sort=`natural`', function () {
+        it('creates a sort stage for the aggregation pipeline, with multiple sort keys (keys not in dictionary)', function () {
+            const qb = createQb();
+            const sort = 'first:asc;last:desc';
+            const expected: any = { $sort: { first: 1, last: -1 } };
+            expect(qb.sort(sort)).to.eql(expected);
+        });
+
+        it('creates a sort stage for the aggregation pipeline, with multiple sort keys (no dictionary)', function () {
+            const qb = createQbN();
+            const sort = 'first:asc;last:desc';
+            const expected: any = { $sort: { first: 1, last: -1 } };
+            expect(qb.sort(sort)).to.eql(expected);
+        });
+
+        it('creates a sort stage for the aggregation pipeline with $natural sort key when sort=`natural` (translated)', function () {
             const qb = createQb();
             let sort = '$natural:desc';
             let expected: any = { $sort: { $natural: -1 } };
@@ -111,7 +125,7 @@ describe('QueryBuilder', function () {
             expect(qb.sort(sort)).to.eql(expected);
         });
 
-        it('creates a sort stage for the aggregation pipeline with $meta sort key when sort=`meta`', function () {
+        it('creates a sort stage for the aggregation pipeline with $meta sort key when sort=`meta` (translated)', function () {
             const qb = createQb();
             let sort = '$meta';
             let expected: any = { $sort: { $meta: 'textScore' } };
@@ -124,7 +138,6 @@ describe('QueryBuilder', function () {
         it('returns null when given invalid search options', function () {
             const qb = createQb();
             expect(qb.sort('five')).to.eql(null);
-            expect(qb.sort('firstName:asc')).to.eql(null);
             expect(qb.sort('name:2')).to.eql(null);
             expect(qb.sort(':asc')).to.eql(null);
         });
