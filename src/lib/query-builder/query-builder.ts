@@ -45,7 +45,7 @@ export class QueryBuilder {
     }
 
     /**
-     * Creates a skip stage for the aggregation pipeline using values from the given string.
+     * Creates a sort stage for the aggregation pipeline using values from the given string.
      * @param sort - A string which supported key values.
      */
     sort(sort: string): object {
