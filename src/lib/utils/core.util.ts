@@ -14,7 +14,7 @@ export class CoreUtilities {
     private static trueValues = ['yes', 'true'];
 
     /**
-     * Checks if an item is an object
+     * Determines whether the given input is an object.
      * @param item
      */
     static isObject(item: any): boolean {
@@ -22,7 +22,7 @@ export class CoreUtilities {
     }
 
     /**
-     * Checks if an items is an object excluding arrays
+     * Determines whether the given inpite is an object but not an array.
      * @param item
      */
     static isRealObject(item: any): boolean {
@@ -30,7 +30,10 @@ export class CoreUtilities {
     }
 
     /**
-     * Converts string values `yes`, `true` to boolean true and `no`, `false` to boolean false
+     * Converts specified string values to their equivalent boolean values.
+     * Values `yes` and `true` are converted to boolean true.
+     * Values `no` and `false` are converted to boolean false.
+     * Otherwise it returns null.
      */
     static strToBool(value: string | boolean): boolean {
         if (value === true || value === false) {
