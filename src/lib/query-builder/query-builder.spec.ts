@@ -16,6 +16,7 @@ const expect = chai.expect;
 const QueryBuilder = require('../dist/lib').QueryBuilder;
 
 const dictionary = {
+    _id: 'id',
     number: 'number',
     firstName: 'name',
     lastName: 'surname',
@@ -75,5 +76,55 @@ describe('QueryBuilder', function () {
             expect(qb.skip('five')).to.eql(expected);
             expect(qb.skip({})).to.eql(expected);
         });
+    });
+
+    describe('QueryBuilder.sort', function () {
+
+        it('creates a sort stage for the aggregation pipeline. (Asc/Desc Order)', function () {
+            const qb = createQb();
+            let sort = 'id:asc';
+            let expected: any = { $sort: { _id: 1 } };
+            expect(qb.sort(sort)).to.eql(expected);
+            sort = 'name:desc';
+            expected = { $sort: { firstName: -1 } };
+            expect(qb.sort(sort)).to.eql(expected);
+        });
+
+        it('creates a sort stage for the aggregation pipeline, with multiple sort keys', function () {
+            const qb = createQb();
+            const sort = 'id:asc;name:desc';
+            const expected: any = { $sort: { _id: 1, firstName: -1 } };
+            expect(qb.sort(sort)).to.eql(expected);
+        });
+
+        it('creates a sort stage for the aggregation pipeline with $natural sort key when sort=`natural`', function () {
+            const qb = createQb();
+            let sort = '$natural:desc';
+            let expected: any = { $sort: { $natural: -1 } };
+            expect(qb.sort(sort)).to.eql(expected);
+            sort = '$natural:asc';
+            expected = { $sort: { $natural: 1 } };
+            expect(qb.sort(sort)).to.eql(expected);
+        });
+
+        it('creates a sort stage for the aggregation pipeline with $meta sort key when sort=`meta`', function () {
+            const qb = createQb();
+            let sort = '$meta';
+            let expected: any = { $sort: { $meta: 'textScore' } };
+            expect(qb.sort(sort)).to.eql(expected);
+            sort = '$meta;name:asc';
+            expected = { $sort: { $meta: 'textScore', firstName: 1 } };
+            expect(qb.sort(sort)).to.eql(expected);
+        });
+
+        it('returns null when given invalid search options', function () {
+            const qb = createQb();
+            expect(qb.sort('five')).to.eql(undefined);
+            expect(qb.sort('firstName:asc')).to.eql(undefined);
+            expect(qb.sort('name:2')).to.eql(undefined);
+            expect(qb.sort(':asc')).to.eql(undefined);
+        });
+
+
     });
 });
