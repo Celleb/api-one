@@ -22,7 +22,6 @@ class CoreUtilities {
     static split(string, splitter = ',') {
         splitter = '\\s*' + splitter + '\\s*';
         const regex = new RegExp(splitter);
-        console.log(regex);
         return string.split(regex);
     }
 }

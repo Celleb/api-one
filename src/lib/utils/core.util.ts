@@ -54,7 +54,6 @@ export class CoreUtilities {
     static split(string: string, splitter: string = ','): Array<string> {
         splitter = '\\s*' + splitter + '\\s*';
         const regex = new RegExp(splitter);
-        console.log(regex);
         return string.split(regex);
     }
 }
