@@ -40,3 +40,4 @@ Thumbs.db
 # convertion folders
 /dist
 /test
+src/playground.spec.ts

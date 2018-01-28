@@ -39,6 +39,10 @@ function createQb() {
     return QueryBuilder.create(schemaDef, dictionary);
 }
 
+function createQbN() {
+    return QueryBuilder.create(schemaDef);
+}
+
 describe('QueryBuilder', function () {
     describe('QueryBuilder#create', function () {
         it('creates a new instance of QueryBuilder, ', function () {
@@ -80,7 +84,7 @@ describe('QueryBuilder', function () {
 
     describe('QueryBuilder.sort', function () {
 
-        it('creates a sort stage for the aggregation pipeline. (Asc/Desc Order)', function () {
+        it('creates a sort stage for the aggregation pipeline from the given string. (key will be translated)', function () {
             const qb = createQb();
             let sort = 'id:asc';
             let expected: any = { $sort: { _id: 1 } };
@@ -119,12 +123,37 @@ describe('QueryBuilder', function () {
 
         it('returns null when given invalid search options', function () {
             const qb = createQb();
-            expect(qb.sort('five')).to.eql(undefined);
-            expect(qb.sort('firstName:asc')).to.eql(undefined);
-            expect(qb.sort('name:2')).to.eql(undefined);
-            expect(qb.sort(':asc')).to.eql(undefined);
+            expect(qb.sort('five')).to.eql(null);
+            expect(qb.sort('firstName:asc')).to.eql(null);
+            expect(qb.sort('name:2')).to.eql(null);
+            expect(qb.sort(':asc')).to.eql(null);
         });
+    });
 
-
+    describe('QueryBuilder.include', function () {
+        it('creates a projection stage for the aggregation pipeline from the given string.', function () {
+            const qb = createQb();
+            let expected = { $project: { firstName: true } };
+            expect(qb.include('name')).to.eql(expected);
+        });
+        it('creates a projection stage for the aggregation pipeline with multiple items from the given string.', function () {
+            const qb = createQb();
+            let expected = { $project: { firstName: true, _id: true } };
+            expect(qb.include('name, id')).to.eql(expected);
+        });
+        it('creates a projection stage for the aggregation pipeline from the given string. (no key translation)', function () {
+            const qb = createQb();
+            let expected: any = { $project: { 'first.name': true } };
+            expect(qb.include('first.name')).to.eql(expected);
+            expected.$project['last.name'] = true;
+            expect(qb.include('first.name, last.name')).to.eql(expected);
+        });
+        it('creates a projection stage for the aggregation pipeline from the given value. (Using QueryBuilder with no dictionary)', function () {
+            const qb = createQbN();
+            let expected: any = { $project: { 'name': true } };
+            expect(qb.include('name')).to.eql(expected);
+            expected.$project['surname'] = true;
+            expect(qb.include('name, surname')).to.eql(expected);
+        });
     });
 });

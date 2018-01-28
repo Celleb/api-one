@@ -45,8 +45,8 @@ export class QueryBuilder {
     }
 
     /**
-     * Creates a sort stage for the aggregation pipeline using values from the given string.
-     * @param sort - A string which supported key values.
+     * Creates a sort stage for the aggregation pipeline from the given string.
+     * @param sort - A string with supported key values.
      */
     sort(sort: string): object {
         let $sort = null;
@@ -61,9 +61,40 @@ export class QueryBuilder {
             if (this.sortValues.hasOwnProperty(value)) {
                 return { $sort: { $natural: this.sortValues[value] } };
             }
-            return undefined;
+            return null;
         }
         return this.sortByItems(sort, $sort);
+    }
+
+    /**
+     * Creates and returns a project stage for the aggregation pipeline from given string.
+     * @param include - A string with supported values to include.
+     */
+    include(include: string): object {
+        const values = $$.split(include);
+        let $project = null;
+        values.forEach(value => {
+            value = this.dictValue(value, this.iDictionary) || value;
+            $project = $project || {};
+            $project[value] = true;
+        });
+        return { $project };
+    }
+
+    /**
+     * Returns the value of the specified property/key in the specified dictionary.
+     * Returns null if the dictionary is not given or the property/key does not exist.
+     * @param key
+     * @param dictionary
+     */
+    private dictValue(key: string, dictionary: Dictionary): string {
+        if (!dictionary || !dictionary[key]) {
+            return null;
+        }
+        if ($$.isRealObject(dictionary[key]) && dictionary[key]._id) {
+            return dictionary[key]._id;
+        }
+        return dictionary[key];
     }
 
     /**
@@ -78,16 +109,14 @@ export class QueryBuilder {
                 if ($$.isRealObject(this.iDictionary[key]) && !this.iDictionary[key]._id) {
                     // skip
                 } else {
-                    if (!$sort) {
-                        $sort = {};
-                    }
+                    $sort = $sort || {};
                     key = ($$.isRealObject(this.iDictionary[key]) ? this.iDictionary[key]._id : this.iDictionary[key]);
                     value = this.sortValues[value];
                     $sort[key] = value;
                 }
             }
         });
-        return $sort ? { $sort } : undefined;
+        return $sort ? { $sort } : null;
     }
 
     /**
