@@ -11,3 +11,4 @@ export * from './schema-add-ons';
 export * from './session';
 export * from './data-options';
 export * from './data';
+export * from './operators';

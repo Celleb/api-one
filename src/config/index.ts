@@ -7,3 +7,4 @@
  * @license MIT
  */
 export * from './default-schema-options';
+export * from './default-operators';
