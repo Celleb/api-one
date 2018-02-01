@@ -54,13 +54,13 @@ function createMbN() {
 
 describe('MatchHelper', function () {
 
-    describe('MatchHelper.constructor', function () {
+    describe('.constructor', function () {
         it('creates a new instance of match builder', function () {
             expect(createMb()).to.be.an.instanceOf(MatchHelper);
         });
     });
 
-    describe('MatchHelper.getKeyAndValues', function () {
+    describe('.getKeyAndValues', function () {
 
         it('extracts the key and value from the specified string and returns an array with the string and value', function () {
             const mb = createMbN();
@@ -82,7 +82,7 @@ describe('MatchHelper', function () {
         });
     });
 
-    describe('MatchHelper.typify', function () {
+    describe('.typify', function () {
 
         it('converts the specified value to the correct type based on the SchemaDefinition', function () {
             const mb = createMbN();
@@ -108,5 +108,59 @@ describe('MatchHelper', function () {
             expect(mb.typify('3', 'firstName')).to.be.a('string');
         });
 
+    });
+
+    describe('.toEqual', function () {
+        it('creates and returns an object that specifies an equality condition', function () {
+            const mb = createMbN();
+            const expected = { name: 'Jonas' };
+            expect(mb.equal('name', 'Jonas')).to.eql(expected);
+        });
+
+        it('creates and returns an object that specifies an equality condition (typified)', function () {
+            const mb = createMbN();
+            const expected = { _id: 3 };
+            expect(mb.equal('_id', '3')).to.eql(expected);
+        });
+
+        it('creates and returns an object that specifies an equality condition that matches any value in an array', function () {
+            const mb = createMbN();
+            const expected = { name: { $in: ['Jonas', 'Tomanga'] } };
+            expect(mb.equal('name', ['Jonas', 'Tomanga'])).to.eql(expected);
+        });
+    });
+
+    describe('.notEqual', function () {
+        it('creates and returns an object that specifies a not equal condition', function () {
+            const mb = createMbN();
+            const expected = { name: { $ne: 'Jonas' } };
+            expect(mb.notEqual('name', 'Jonas')).to.eql(expected);
+        });
+
+        it('creates and returns an object that specifies a not equal condition (typified)', function () {
+            const mb = createMbN();
+            const expected = { _id: { $ne: 3 } };
+            expect(mb.notEqual('_id', '3')).to.eql(expected);
+        });
+
+        it('creates and returns an object that specifies a not equal condition that matches any value in an array', function () {
+            const mb = createMbN();
+            const expected = { name: { $nin: ['Jonas', 'Tomanga'] } };
+            expect(mb.notEqual('name', ['Jonas', 'Tomanga'])).to.eql(expected);
+        });
+    });
+
+    describe('.greaterOrEqual', function () {
+        it('creates and returns an object that specifies a greater or equal condition', function () {
+            const mb = createMbN();
+            const expected = { name: { $gte: 'Jonas' } };
+            expect(mb.greaterOrEqual('name', 'Jonas')).to.eql(expected);
+        });
+
+        it('creates and returns an object that specifies a greater or equal condition (typified)', function () {
+            const mb = createMbN();
+            const expected = { _id: { $gte: 3 } };
+            expect(mb.greaterOrEqual('_id', '3')).to.eql(expected);
+        });
     });
 });

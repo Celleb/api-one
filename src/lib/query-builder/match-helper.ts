@@ -66,4 +66,42 @@ export class MatchHelper {
 
         return value;
     }
+
+    /**
+     * Creates and returns an object that specifies an equality condition.
+     * If `value` is an array a $in condition is created to match any value in the array.
+     * @param key
+     * @param value
+     */
+    equal(key: string, value: any): object {
+        value = this.typify(value, key);
+        if (Array.isArray(value)) {
+            return { [key]: { $in: value } };
+        }
+        return { [key]: value };
+    }
+
+    /**
+     * Creates and returns an object that specifies a not equal condition.
+     * If `value` is an array a $nin condition is created to exclude any value in the array.
+     * @param key
+     * @param value
+     */
+    notEqual(key: string, value: any): object {
+        value = this.typify(value, key);
+        if (Array.isArray(value)) {
+            return { [key]: { $nin: value } };
+        }
+        return { [key]: { $ne: value } };
+    }
+
+    /**
+     * Creates and returns an object that specifies a greate or equal condition.
+     * @param key
+     * @param value
+     */
+    greaterOrEqual(key: string, value: any): object {
+        value = this.typify(value, key);
+        return { [key]: { $gte: value } };
+    }
 }
