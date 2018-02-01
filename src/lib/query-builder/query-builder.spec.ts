@@ -44,6 +44,7 @@ function createQbN() {
 }
 
 describe('QueryBuilder', function () {
+
     describe('QueryBuilder#create', function () {
         it('creates a new instance of QueryBuilder, ', function () {
             const qb = QueryBuilder.create(schemaDef, dictionary);
@@ -167,6 +168,41 @@ describe('QueryBuilder', function () {
             expect(qb.include('name')).to.eql(expected);
             expected.$project['surname'] = true;
             expect(qb.include('name, surname')).to.eql(expected);
+        });
+    });
+
+    describe('QueryBuilder.exclude', function () {
+        it('creates a projection stage for the aggregation pipeline from the given string.', function () {
+            const qb = createQb();
+            let expected = { $project: { firstName: false } };
+            expect(qb.exclude('name')).to.eql(expected);
+        });
+        it('creates a projection stage for the aggregation pipeline with multiple items from the given string.', function () {
+            const qb = createQb();
+            let expected = { $project: { firstName: false, _id: false } };
+            expect(qb.exclude('name, id')).to.eql(expected);
+        });
+        it('creates a projection stage for the aggregation pipeline from the given string. (no key translation)', function () {
+            const qb = createQb();
+            let expected: any = { $project: { 'first.name': false } };
+            expect(qb.exclude('first.name')).to.eql(expected);
+            expected.$project['last.name'] = false;
+            expect(qb.exclude('first.name, last.name')).to.eql(expected);
+        });
+        it('creates a projection stage for the aggregation pipeline from the given value. (Using QueryBuilder with no dictionary)', function () {
+            const qb = createQbN();
+            let expected: any = { $project: { 'name': false } };
+            expect(qb.exclude('name')).to.eql(expected);
+            expected.$project['surname'] = false;
+            expect(qb.exclude('name, surname')).to.eql(expected);
+        });
+    });
+
+    describe('QueryBuilder.search', function () {
+        it('creates a search stage for the aggregation pipeline from the given string.', function () {
+            const qb = createQb();
+            let expected = { $match: { $text: { $search: 'Text search' } } };
+            expect(qb.search('Text search')).to.eql(expected);
         });
     });
 });

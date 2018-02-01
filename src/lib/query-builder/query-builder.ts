@@ -67,35 +67,42 @@ export class QueryBuilder {
     }
 
     /**
-     * Creates and returns a project stage for the aggregation pipeline from given string.
-     * @param include - A string with supported values to include.
+     * Creates and returns a project (include) stage for the aggregation pipeline from given string.
+     * @param include - A string with supported fields to include.
      */
     include(include: string): object {
-        const values = $$.split(include);
+        return this.project(include, true);
+    }
+
+    /**
+     * Creates and returns a project (exclude) stage for the aggregation pipeline from given string.
+     * @param exclude - A string with supported fields to exclude.
+     */
+    exclude(exclude: string): object {
+        return this.project(exclude, false);
+    }
+
+    search(text: string): object {
+        const $search = text;
+        return { $match: { $text: { $search } } };
+    }
+
+    /**
+     * Creates and returns a project stage for the aggregation pipeline from given string.
+     * @param string - A string with supported fields to project.
+     * @param val - The value of projection
+     */
+    private project(string: string, val: boolean): object {
+        const values = $$.split(string);
         let $project = null;
         values.forEach(value => {
-            value = this.dictValue(value, this.iDictionary) || value;
+            value = Mapper.getKeyValue(value, this.iDictionary) || value;
             $project = $project || {};
-            $project[value] = true;
+            $project[value] = val;
         });
         return { $project };
     }
 
-    /**
-     * Returns the value of the specified property/key in the specified dictionary.
-     * Returns null if the dictionary is not given or the property/key does not exist.
-     * @param key
-     * @param dictionary
-     */
-    private dictValue(key: string, dictionary: Dictionary): string {
-        if (!dictionary || !dictionary[key]) {
-            return null;
-        }
-        if ($$.isRealObject(dictionary[key])) {
-            return dictionary[key]._id || null;
-        }
-        return dictionary[key];
-    }
 
     /**
      * Creates a sort object
@@ -109,7 +116,7 @@ export class QueryBuilder {
                 continue;
             }
             $sort = $sort || {};
-            key = this.dictValue(key, this.iDictionary) || key;
+            key = Mapper.getKeyValue(key, this.iDictionary) || key;
             value = this.sortValues[value];
             $sort[key] = value;
         }
