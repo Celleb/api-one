@@ -4,14 +4,14 @@ import { DI } from './';
 import 'reflect-metadata';
 
 export function Inject() {
-    return function (target: Constructor, key?: string): any {
+    return function (target: Constructor | object, key?: string): any {
         if (key) {
             const name = Reflect.getOwnMetadata('design:type', target, key).name;
             const dependency = DI.inject(name);
             target[key] = dependency;
             return;
         }
-        return newClass(target);
+        return newClass(target as Constructor);
     };
 }
 

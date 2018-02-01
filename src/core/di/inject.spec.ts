@@ -31,7 +31,7 @@ describe('Inject decorator', function () {
 
         expect(() => {
             const car = new Car(undefined);
-        }).to.throw(ReferenceError, 'Dependency does not exist.');
+        }).to.throw(ReferenceError, 'Dependency `Logger` does not exist.');
 
     });
     it('should throw an error when trying to inject an unregistered dependency into a property', function () {
@@ -40,7 +40,7 @@ describe('Inject decorator', function () {
                 @Inject()
                 log: Logger;
             }
-        }).to.throw(ReferenceError, 'Dependency does not exist.');
+        }).to.throw(ReferenceError, 'Dependency `Logger` does not exist.');
     });
     it('should inject a dependencies into a property', function () {
         DI.register(Logger);
