@@ -22,6 +22,13 @@ export class MatchHelper {
         this.dictionary = Mapper.invert(dictionary);
     }
 
+    /**
+     * Extracts a key and value(s) from a specified string using a specified seperator and
+     * returns them as an array. It also translates the key if found in the dictionary.
+     * @param string
+     * @param seperator
+     * @returns An array with the first values as the key and the second value as the value(s).
+     */
     getKeyAndValues(string: string, seperator: string): [string, string | string[]] {
         const point = string.indexOf(seperator);
         let key = string.substring(0, point);
@@ -34,6 +41,12 @@ export class MatchHelper {
         return [key, value];
     }
 
+    /**
+     * Converts a value to the type specified by the key in the Schema Definition.
+     * Otherwise it returns the value in the original type.
+     * @param value
+     * @param key
+     */
     typify(value: string, key: string): any {
         if (Array.isArray(value)) {
             let values = [];
