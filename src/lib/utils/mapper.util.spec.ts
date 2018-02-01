@@ -138,4 +138,19 @@ describe('Mapper', function () {
             expect(results).to.eql(expected);
         });
     });
+
+    describe('#getKeyValue', function () {
+        it('extracts the value of the specified key from the dictionary and returns it', function () {
+            expect(Mapper.getKeyValue('firstName', dictionary)).to.eql('name');
+            expect(Mapper.getKeyValue('best', dictionary)).to.eql('bestes');
+        });
+
+        it('returns null key when no dictionary is provided', function () {
+            expect(Mapper.getKeyValue('firstName')).to.eql(null);
+        });
+
+        it('returns null when the key does not exist in dictionary', function () {
+            expect(Mapper.getKeyValue('name', dictionary)).to.eql(null);
+        });
+    });
 });

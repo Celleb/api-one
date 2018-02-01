@@ -12,6 +12,11 @@ import { $$ } from './';
 
 export class Mapper {
 
+    /**
+     * Overrides the keys of an object to the keys specified by the dictionary values.
+     * @param data
+     * @param dictionary
+     */
     static mapper(data: Data, dictionary: Dictionary): Data {
         let mappedData = {};
         if (_.isEmpty(dictionary)) {
@@ -36,12 +41,21 @@ export class Mapper {
         return mappedData;
     }
 
+    /**
+     * Overrides the keys of an object or collection to the keys specified by the dictionary values.
+     * @param data - A collection or object
+     * @param dictionary
+     */
     static map(data: Data | Data[], dictionary: Dictionary): Data | Data[] {
         return Array.isArray(data) ? _.map(data, values => {
             return this.mapper(values, dictionary);
         }) : this.mapper(data, dictionary);
     }
 
+    /**
+     * Inverts the keys and values of a dictionary.
+     * @param dictionary
+     */
     static invert(dictionary: Dictionary): Dictionary {
         let invertedDictionary = {};
         for (let key in dictionary) {
@@ -55,5 +69,22 @@ export class Mapper {
         }
         return invertedDictionary;
     }
+
+    /**
+     * Returns the value of the specified property/key in the specified dictionary.
+     * Returns null if the dictionary is not given or the property/key does not exist.
+     * @param key
+     * @param dictionary
+     */
+    static getKeyValue(key: string, dictionary: Dictionary): string {
+        if (!dictionary || !dictionary[key]) {
+            return null;
+        }
+        if ($$.isRealObject(dictionary[key])) {
+            return dictionary[key]._id || null;
+        }
+        return dictionary[key];
+    }
+
 
 }
