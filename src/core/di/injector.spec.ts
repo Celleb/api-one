@@ -160,7 +160,7 @@ describe('Injector', function () {
         it('should return a ReferenceError for unregistered injectables', function () {
             expect(() => {
                 injector.inject('engine');
-            }).to.throw(ReferenceError, 'Dependency does not exist.');
+            }).to.throw(ReferenceError, 'Dependency `engine` does not exist.');
         });
     });
 
@@ -198,7 +198,7 @@ describe('Injector', function () {
         it('should return a ReferenceError for unregistered providers', function () {
             expect(() => {
                 injector.get('engine');
-            }).to.throw(ReferenceError, 'Dependency does not exist.');
+            }).to.throw(ReferenceError, 'Dependency `engine` does not exist.');
         });
     });
     describe('Injector.clear', function () {
@@ -207,7 +207,7 @@ describe('Injector', function () {
             injector.clear();
             expect(injector.singletons).to.be.empty;
             expect(injector.factories).to.be.empty;
-            expect(() => injector.inject(Car)).to.throw(ReferenceError, 'Dependency does not exist.');
+            expect(() => injector.inject(Car)).to.throw(ReferenceError, 'Dependency `Car` does not exist.');
         });
     });
 

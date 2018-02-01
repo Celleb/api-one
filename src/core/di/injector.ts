@@ -144,7 +144,7 @@ export class Injector {
     get(key: string | Constructor): any {
         const name = this.getKey(key);
         if (!this.factories.hasOwnProperty(name)) {
-            throw ReferenceError('Dependency does not exist.');
+            throw ReferenceError('Dependency `' + name + '` does not exist.');
         }
         return this.factories[name](this);
     }
@@ -161,7 +161,7 @@ export class Injector {
         } else if (this.factories.hasOwnProperty(name)) {
             return this.get(name);
         }
-        throw new ReferenceError('Dependency does not exist.');
+        throw new ReferenceError('Dependency `' + name + '` does not exist.');
     }
     /**
      * Removes all registered providers
