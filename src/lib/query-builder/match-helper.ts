@@ -9,7 +9,7 @@
 
 import * as mongoose from 'mongoose';
 import { Dictionary, Inject } from '../../core';
-import { $$ } from '../utils/core.util';
+import { $$, Mapper } from '../utils';
 import { Operators } from '../../config';
 
 export class MatchHelper {
@@ -19,14 +19,33 @@ export class MatchHelper {
     operators: Operators;
     constructor(schemaDef: mongoose.SchemaDefinition, dictionary?: Dictionary) {
         this.schemaDef = schemaDef;
-        this.dictionary = dictionary;
+        this.dictionary = Mapper.invert(dictionary);
     }
 
     getKeyAndValues(string: string, seperator: string): [string, string | string[]] {
         const point = string.indexOf(seperator);
-        const key = string.substring(0, point);
+        let key = string.substring(0, point);
+        key = Mapper.getKeyValue(key, this.dictionary) || key;
         let value: string | string[] = string.substring(point + seperator.length);
         value = (value.indexOf(',') !== -1) ? $$.split(value, ',') : value;
         return [key, value];
+    }
+
+    typify(value: string, key: string): any {
+        if (Array.isArray(value)) {
+            let values = [];
+            value.forEach(val => {
+                values.push(this.typify(val, key));
+            });
+            return values;
+        }
+        if (this.schemaDef[key] && (this.schemaDef[key] === Number || (<any>this.schemaDef[key]).type === Number)) {
+            return +value;
+        }
+
+        if (this.schemaDef[key] && (this.schemaDef[key] === Date || (<any>this.schemaDef[key]).type === Date)) {
+            return new Date(value);
+        }
+        return value;
     }
 }
