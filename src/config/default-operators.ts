@@ -17,6 +17,7 @@ export class Operators {
     lessOrGreater: string;
     greater: string;
     lesser: string;
+    lessOrGreaterInc: string;
 }
 
 export const defaultOperators: Operators = {
@@ -26,5 +27,6 @@ export const defaultOperators: Operators = {
     lessOrEqual: '<:',
     lessOrGreater: '<>',
     greater: '>',
-    lesser: '<'
+    lesser: '<',
+    lessOrGreaterInc: '<:>'
 };
