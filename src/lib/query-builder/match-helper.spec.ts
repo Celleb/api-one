@@ -163,4 +163,74 @@ describe('MatchHelper', function () {
             expect(mb.greaterOrEqual('_id', '3')).to.eql(expected);
         });
     });
+
+    describe('.lessOrEqual', function () {
+        it('creates and returns an object that specifies a less or equal condition', function () {
+            const mb = createMbN();
+            const expected = { name: { $lte: 'Jonas' } };
+            expect(mb.lessOrEqual('name', 'Jonas')).to.eql(expected);
+        });
+
+        it('creates and returns an object that specifies a less or equal condition (typified)', function () {
+            const mb = createMbN();
+            const expected = { _id: { $lte: 3 } };
+            expect(mb.lessOrEqual('_id', '3')).to.eql(expected);
+        });
+    });
+
+    describe('.lessOrGreater', function () {
+        it('creates and returns an object that specifies a less or greater condition', function () {
+            const mb = createMbN();
+            const expected = { name: { $lt: 'Jonas', $gt: 'Tomanga' } };
+            expect(mb.lessOrGreater('name', ['Jonas', 'Tomanga'])).to.eql(expected);
+        });
+
+        it('creates and returns an object that specifies a less or greater condition (typified)', function () {
+            const mb = createMbN();
+            const expected = { _id: { $lt: 3, $gt: 4 } };
+            expect(mb.lessOrGreater('_id', [3, 4])).to.eql(expected);
+        });
+    });
+
+    describe('.lessOrGreaterInc', function () {
+        it('creates and returns an object that specifies a less or greater inclusive condition', function () {
+            const mb = createMbN();
+            const expected = { name: { $lte: 'Jonas', $gte: 'Tomanga' } };
+            expect(mb.lessOrGreaterInc('name', ['Jonas', 'Tomanga'])).to.eql(expected);
+        });
+
+        it('creates and returns an object that specifies a less or greater inclusive condition (typified)', function () {
+            const mb = createMbN();
+            const expected = { _id: { $lte: 3, $gte: 4 } };
+            expect(mb.lessOrGreaterInc('_id', [3, 4])).to.eql(expected);
+        });
+    });
+
+    describe('.greater', function () {
+        it('creates and returns an object that specifies a greater than condition', function () {
+            const mb = createMbN();
+            const expected = { name: { $gt: 'Jonas' } };
+            expect(mb.greater('name', 'Jonas')).to.eql(expected);
+        });
+
+        it('creates and returns an object that specifies a greater than condition (typified)', function () {
+            const mb = createMbN();
+            const expected = { _id: { $gt: 4 } };
+            expect(mb.greater('_id', '4')).to.eql(expected);
+        });
+    });
+
+    describe('.less', function () {
+        it('creates and returns an object that specifies a less than condition', function () {
+            const mb = createMbN();
+            const expected = { name: { $lt: 'Jonas' } };
+            expect(mb.less('name', 'Jonas')).to.eql(expected);
+        });
+
+        it('creates and returns an object that specifies a less than condition (typified)', function () {
+            const mb = createMbN();
+            const expected = { _id: { $lt: 4 } };
+            expect(mb.less('_id', '4')).to.eql(expected);
+        });
+    });
 });

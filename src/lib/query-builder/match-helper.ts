@@ -78,6 +78,7 @@ export class MatchHelper {
         if (Array.isArray(value)) {
             return { [key]: { $in: value } };
         }
+
         return { [key]: value };
     }
 
@@ -92,16 +93,75 @@ export class MatchHelper {
         if (Array.isArray(value)) {
             return { [key]: { $nin: value } };
         }
+
         return { [key]: { $ne: value } };
     }
 
     /**
-     * Creates and returns an object that specifies a greate or equal condition.
+     * Creates and returns an object that specifies a greater or equal condition.
      * @param key
      * @param value
      */
     greaterOrEqual(key: string, value: any): object {
+        const $gte = this.typify(value, key);
+
+        return { [key]: { $gte } };
+    }
+
+    /**
+     * Creates and returns an object that specifies a less or equal condition.
+     * @param key
+     * @param value
+     */
+    lessOrEqual(key: string, value: any): object {
+        const $lte = this.typify(value, key);
+
+        return { [key]: { $lte } };
+    }
+
+    /**
+     * Creates and returns an object that specifies a less or greater condition.
+     * @param key
+     * @param value
+     */
+    lessOrGreater(key: string, value: any): object {
         value = this.typify(value, key);
-        return { [key]: { $gte: value } };
+        const [$lt, $gt] = value;
+
+        return { [key]: { $lt, $gt } };
+    }
+
+    /**
+    * Creates and returns an object that specifies a less or greater condition.
+    * @param key
+    * @param value
+    */
+    lessOrGreaterInc(key: string, value: any): object {
+        value = this.typify(value, key);
+        const [$lte, $gte] = value;
+
+        return { [key]: { $lte, $gte } };
+    }
+
+    /**
+     * Creates and returns an object that specifies a greater than condition.
+     * @param key
+     * @param value
+     */
+    greater(key: string, value: any): object {
+        const $gt = this.typify(value, key);
+
+        return { [key]: { $gt } };
+    }
+
+    /**
+     * Creates and returns an object that specifies a less than condition.
+     * @param key
+     * @param value
+     */
+    less(key: string, value: any): object {
+        const $lt = this.typify(value, key);
+
+        return { [key]: { $lt } };
     }
 }
