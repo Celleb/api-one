@@ -25,9 +25,12 @@ export class MatchHelper {
     getKeyAndValues(string: string, seperator: string): [string, string | string[]] {
         const point = string.indexOf(seperator);
         let key = string.substring(0, point);
-        key = Mapper.getKeyValue(key, this.dictionary) || key;
         let value: string | string[] = string.substring(point + seperator.length);
+
+        key = Mapper.getKeyValue(key, this.dictionary) || key;
+
         value = (value.indexOf(',') !== -1) ? $$.split(value, ',') : value;
+
         return [key, value];
     }
 
@@ -39,6 +42,7 @@ export class MatchHelper {
             });
             return values;
         }
+
         if (this.schemaDef[key] && (this.schemaDef[key] === Number || (<any>this.schemaDef[key]).type === Number)) {
             return +value;
         }
@@ -46,6 +50,7 @@ export class MatchHelper {
         if (this.schemaDef[key] && (this.schemaDef[key] === Date || (<any>this.schemaDef[key]).type === Date)) {
             return new Date(value);
         }
+
         return value;
     }
 }
