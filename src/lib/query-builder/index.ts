@@ -8,3 +8,4 @@
  */
 
 export * from './query-builder';
+export * from './match-helper';
