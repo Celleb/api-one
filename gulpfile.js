@@ -1,9 +1,8 @@
 const gulp = require('gulp');
 const ts = require('gulp-typescript');
 const mocha = require('gulp-mocha');
-const gutil = require('gulp-util');
+const logger = require('fancy-log');
 const flatten = require('gulp-flatten');
-const JSON = ['src/*.json', 'src/**/*.json'];
 
 const tsProject = ts.createProject('tsconfig.json');
 
@@ -34,20 +33,16 @@ gulp.task('watch', ['scripts'], () => {
 });
 
 
-gulp.task('assets', function () {
-    return gulp.src(JSON_FILES).pipe(gulp.dest('dist'));
-});
-
 gulp.task('mocha', function () {
     return gulp.src(['test/**/*.js'], { read: false })
         .pipe(mocha({
             reporter: 'spec'
         }))
-        .on('error', gutil.log);
+        .on('error', logger.log);
 });
 
 gulp.task('watch-mocha', function () {
 
 });
 
-gulp.task('default', ['watch', 'assets']) 
+gulp.task('default', ['watch']) 
