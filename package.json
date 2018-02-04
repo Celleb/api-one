@@ -10,16 +10,16 @@
     "node": ">=8.x"
   },
   "scripts": {
-    "build": "gulp watch",
+    "watch": "gulp watch",
     "start": "node dist/index.js",
-    "test": "nyc mocha"
+    "build": "gulp build",
+    "test": "gulp tests && nyc mocha"
   },
   "dependencies": {
     "body-parser": "^1.18.2",
     "compression": "^1.7.1",
     "csurf": "^1.9.0",
     "express": "^4.16.2",
-    "fancy-log": "^1.3.2",
     "helmet": "^3.9.0",
     "lodash": "^4.17.4",
     "method-override": "^2.3.10",
@@ -48,11 +48,11 @@
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",
     "debug": "^3.1.0",
+    "fancy-log": "^1.3.2",
     "gulp": "^3.9.1",
     "gulp-flatten": "^0.3.1",
     "gulp-mocha": "^4.3.1",
     "gulp-typescript": "^3.2.3",
-    "gulp-util": "^3.0.8",
     "mocha": "^4.0.1",
     "nyc": "^11.3.0",
     "sinon": "^4.1.3",
