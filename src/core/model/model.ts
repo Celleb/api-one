@@ -7,7 +7,7 @@
  * @license MIT
  */
 import { Data } from '../types';
-import { DI } from '../di';
+import { DI } from 'tsjs-di';
 
 import * as mongoose from 'mongoose';
 import * as express from 'express';

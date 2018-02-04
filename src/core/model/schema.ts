@@ -6,7 +6,7 @@
  * All rights reserved
  * @license MIT
  */
-import { DI } from '../di';
+import { DI } from 'tsjs-di';
 import * as mongoose from 'mongoose';
 
 export class Schema {

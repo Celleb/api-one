@@ -11,11 +11,13 @@ import * as mocha from 'mocha';
 import * as chai from 'chai';
 import * as sinon from 'sinon';
 import * as chaiPromised from 'chai-as-promised';
+import { DI } from 'tsjs-di';
+
 chai.use(chaiPromised);
 const expect = chai.expect;
 
 const Model = require('../dist/core/model').Model;
-const DI = require('../dist/core/di').DI;
+
 const dictionary = {
     firstName: 'name',
     lastName: 'surname',

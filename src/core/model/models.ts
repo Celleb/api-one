@@ -10,7 +10,7 @@
 import * as mongoose from 'mongoose';
 import { Database } from '../../lib/database/database';
 import { ModelOptions, ModelDefinition } from '../types';
-import { DI } from '../di';
+import { DI } from 'tsjs-di';
 
 export class Models {
     private db: mongoose.Connection;

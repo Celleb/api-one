@@ -14,7 +14,7 @@ import * as sinon from 'sinon';
 
 const expect = chai.expect;
 
-const DI = require('../dist/core/di').DI;
+import { DI } from 'tsjs-di';
 const operators = require('../dist/config').defaultOperators;
 DI.clear();
 DI.register({ provide: 'Operators', useValue: operators });

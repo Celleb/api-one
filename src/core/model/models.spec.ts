@@ -13,7 +13,7 @@ import * as chai from 'chai';
 import * as sinon from 'sinon';
 const expect = chai.expect;
 const Models = require('../dist/core/model').Models;
-const DI = require('../dist/core/di').DI;
+import { DI } from 'tsjs-di';
 
 const Database = {
     model: sinon.stub().returns({})

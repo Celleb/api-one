@@ -15,7 +15,7 @@ const expect = chai.expect;
 
 import * as mongoose from 'mongoose';
 const Schema = require('../dist/core/model').Schema;
-const DI = require('../dist/core/di').DI;
+import { DI } from 'tsjs-di';
 
 
 

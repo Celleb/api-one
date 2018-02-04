@@ -12,8 +12,8 @@
   "scripts": {
     "watch": "gulp watch",
     "start": "node dist/index.js",
-    "build": "gulp build",
-    "test": "gulp tests && nyc mocha"
+    "build": "gulp scripts && gulp tests",
+    "test": "nyc mocha"
   },
   "dependencies": {
     "body-parser": "^1.18.2",

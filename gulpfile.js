@@ -34,11 +34,9 @@ gulp.task('watch', ['scripts'], () => {
 
 
 gulp.task('mocha', function () {
-    return gulp.src(['test/**/*.js'], { read: false })
-        .pipe(mocha({
-            reporter: 'spec'
-        }))
-        .on('error', logger.log);
+    return gulp.src(['test/**/*.js'], { read: false }).pipe(mocha({
+        reporter: 'spec'
+    })).on('error', logger.error);
 });
 
 gulp.task('watch-mocha', function () {

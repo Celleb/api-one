@@ -8,9 +8,10 @@
  */
 
 import * as mongoose from 'mongoose';
-import { Dictionary, Inject } from '../../core';
+import { Dictionary } from '../../core';
 import { $$, Mapper } from '../utils';
 import { Operators } from '../../config';
+import { Inject } from 'tsjs-di';
 
 export class MatchHelper {
     private schemaDef: mongoose.SchemaDefinition;

@@ -6,10 +6,11 @@
  * All rights reserved
  * @license MIT
  */
-import { DatabaseConfig, DI } from '../../core';
+import { DatabaseConfig } from '../../core';
 import { ConnectionHelper } from './connection-helper';
 import * as mongoose from 'mongoose';
 import * as debug from 'debug';
+import { DI } from 'tsjs-di';
 
 export class Database extends mongoose.Connection {
     /**
