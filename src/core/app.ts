@@ -1,6 +1,7 @@
 import * as express from 'express';
 import { Application, Handler } from 'express';
-import { Config, DI, Constructor, Providers, RouteConfig } from './';
+import { Config, Constructor, Providers, RouteConfig } from './';
+import { DI } from 'tsjs-di';
 import * as bodyParser from 'body-parser';
 import * as methodOverride from 'method-override';
 import * as helmet from 'helmet';
