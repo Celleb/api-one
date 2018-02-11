@@ -27,6 +27,7 @@ const dictionary = {
 };
 
 const schemaDef = {
+    _id: { type: Number },
     number: Number,
     firstName: { type: String },
     lastName: String,
@@ -45,14 +46,14 @@ function createQbN() {
 
 describe('QueryBuilder', function () {
 
-    describe('QueryBuilder#create', function () {
+    describe('#create', function () {
         it('creates a new instance of QueryBuilder, ', function () {
             const qb = QueryBuilder.create(schemaDef, dictionary);
             expect(qb).to.instanceOf(QueryBuilder);
         });
     });
 
-    describe('QueryBuilder.limit', function () {
+    describe('.limit', function () {
         it('creates an aggregation pipeline limit stage object from the given value', function () {
             const qb = createQb();
             const expected = { $limit: 10 };
@@ -68,7 +69,7 @@ describe('QueryBuilder', function () {
         });
     });
 
-    describe('QueryBuilder.skip', function () {
+    describe('.skip', function () {
         it('creates an aggregation pipeline skip stage object from the given value', function () {
             const qb = createQb();
             const expected = { $skip: 10 };
@@ -83,7 +84,7 @@ describe('QueryBuilder', function () {
         });
     });
 
-    describe('QueryBuilder.sort', function () {
+    describe('.sort', function () {
 
         it('creates a sort stage for the aggregation pipeline from the given string. (translated)', function () {
             const qb = createQb();
@@ -144,7 +145,7 @@ describe('QueryBuilder', function () {
         });
     });
 
-    describe('QueryBuilder.include', function () {
+    describe('.include', function () {
         it('creates a projection stage for the aggregation pipeline from the given string.', function () {
             const qb = createQb();
             let expected = { $project: { firstName: true } };
@@ -171,7 +172,7 @@ describe('QueryBuilder', function () {
         });
     });
 
-    describe('QueryBuilder.exclude', function () {
+    describe('.exclude', function () {
         it('creates a projection stage for the aggregation pipeline from the given string.', function () {
             const qb = createQb();
             let expected = { $project: { firstName: false } };
@@ -198,11 +199,37 @@ describe('QueryBuilder', function () {
         });
     });
 
-    describe('QueryBuilder.search', function () {
+    describe('.search', function () {
         it('creates a search stage for the aggregation pipeline from the given string.', function () {
             const qb = createQb();
             let expected = { $match: { $text: { $search: 'Text search' } } };
             expect(qb.search('Text search')).to.eql(expected);
+        });
+    });
+
+    describe('.match', function () {
+        it('creates a match stage for the aggregation pipeline from the given string. (no dictionary)', function () {
+            const qb = createQbN();
+            let expected: any = { $match: { _id: 100, number: { $gte: 5 } } };
+            let query = '_id:100;number>:5';
+            expect(qb.match(query)).to.eql(expected);
+
+            expected = { $match: { _id: { $in: [100, 20] }, number: { $lt: 5, $gt: 0 } } };
+            query = '_id:100,20;number<>5,0';
+            expect(qb.match(query)).to.eql(expected);
+        });
+
+        it('throws an exception on invalid match input', function () {
+            const qb = createQbN();
+            expect(() => qb.match()).to.throw();
+            expect(() => qb.match(null)).to.throw();
+            expect(() => qb.match(true)).to.throw();
+            expect(() => qb.match(1)).to.throw();
+        });
+
+        it('returns null when given invalid string input', function () {
+            const qb = createQbN();
+            expect(qb.match('1')).to.eql(null);
         });
     });
 });

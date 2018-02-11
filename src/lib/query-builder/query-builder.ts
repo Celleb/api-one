@@ -9,19 +9,42 @@
 
 import * as mongoose from 'mongoose';
 import { Dictionary } from '../../core';
+import { Operators } from '../../config';
 import { Mapper, $$ } from '../utils';
+import { Inject } from 'tsjs-di';
+import { MatchHelper } from '../index';
 
 export class QueryBuilder {
 
-    private schemaDef: mongoose.SchemaDefinition;
     private dictionary: Dictionary;
     private iDictionary: Dictionary;
+    private matcher: MatchHelper;
+    private schemaDef: mongoose.SchemaDefinition;
     private sortValues = { asc: 1, desc: -1 };
-
     constructor(schemaDef: mongoose.SchemaDefinition, dictionary?: Dictionary) {
-        this.schemaDef = schemaDef;
+
         this.dictionary = dictionary;
         this.iDictionary = Mapper.invert(this.dictionary);
+        this.matcher = new MatchHelper(schemaDef, dictionary);
+        this.schemaDef = schemaDef;
+
+    }
+
+    /**
+     * Creates and returns a project (exclude) stage for the aggregation pipeline from given string.
+     * @param exclude - A string with supported fields to exclude.
+     */
+    exclude(exclude: string): object {
+        return this.project(exclude, false);
+    }
+
+
+    /**
+     * Creates and returns a project (include) stage for the aggregation pipeline from given string.
+     * @param include - A string with supported fields to include.
+     */
+    include(include: string): object {
+        return this.project(include, true);
     }
 
     /**
@@ -32,6 +55,31 @@ export class QueryBuilder {
     limit(limit: string | number): object {
         const $limit = Number.isInteger(+limit) ? +limit : 1000;
         return { $limit };
+    }
+
+    match(match: string): object {
+
+        let $match = null;
+        const values = $$.split(match, ';');
+
+        for (let value of values) {
+            const query = this.matcher.resolveOperator(value);
+            if (!query) {
+                continue;
+            }
+
+            $match = { ...$match, ...query };
+
+        }
+        return $match ? { $match } : null;
+    }
+
+    /**
+     * Creates a search match stage for the aggregation pipeline from the specified text
+     * @param $search
+     */
+    search($search: string): object {
+        return { $match: { $text: { $search } } };
     }
 
     /**
@@ -64,27 +112,6 @@ export class QueryBuilder {
             return null;
         }
         return this.sortByItems(sort, $sort);
-    }
-
-    /**
-     * Creates and returns a project (include) stage for the aggregation pipeline from given string.
-     * @param include - A string with supported fields to include.
-     */
-    include(include: string): object {
-        return this.project(include, true);
-    }
-
-    /**
-     * Creates and returns a project (exclude) stage for the aggregation pipeline from given string.
-     * @param exclude - A string with supported fields to exclude.
-     */
-    exclude(exclude: string): object {
-        return this.project(exclude, false);
-    }
-
-    search(text: string): object {
-        const $search = text;
-        return { $match: { $text: { $search } } };
     }
 
     /**
