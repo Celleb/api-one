@@ -10,23 +10,23 @@
 //import { Operators } from '../core/types';
 
 export class Operators {
-    equal: string;
-    notEqual: string;
+    between: string;
+    betweenInc: string;
     greaterOrEqual: string;
     lessOrEqual: string;
-    lessOrGreater: string;
+    notEqual: string;
     greater: string;
-    lesser: string;
-    lessOrGreaterInc: string;
+    less: string;
+    equal: string;
 }
 
 export const defaultOperators: Operators = {
-    equal: ':',
-    notEqual: '!:',
+    betweenInc: '<:>',
+    between: '<>',
     greaterOrEqual: '>:',
     lessOrEqual: '<:',
-    lessOrGreater: '<>',
+    notEqual: '!:',
     greater: '>',
-    lesser: '<',
-    lessOrGreaterInc: '<:>'
+    less: '<',
+    equal: ':',
 };
