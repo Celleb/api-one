@@ -7,17 +7,17 @@
  * @license MIT
  */
 
-//import { Operators } from '../core/types';
+import { OperatorsInterface } from '../core';
 
-export class Operators {
-    between: string;
-    betweenInc: string;
-    greaterOrEqual: string;
-    lessOrEqual: string;
-    notEqual: string;
-    greater: string;
-    less: string;
-    equal: string;
+export class Operators implements OperatorsInterface {
+    between;
+    betweenInc;
+    greaterOrEqual;
+    lessOrEqual;
+    notEqual;
+    greater;
+    less;
+    equal;
 }
 
 export const defaultOperators: Operators = {
