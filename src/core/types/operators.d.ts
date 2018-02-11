@@ -1,9 +1,10 @@
-export interface Operators {
-    equal: string;
-    notEqual: string;
-    greaterOrEqual: string;
-    lessOrEqual: string;
-    lessOrGreater: string;
-    greater: string;
-    lesser: string;
+export interface OperatorsInterface {
+    equal: (...args) => any;
+    between: (...args) => any;
+    betweenInc: (...args) => any;
+    greater: (...args) => any;
+    greaterOrEqual: (...args) => any;
+    less: (...args) => any;
+    lessOrEqual: (...args) => any;
+    notEqual: (...args) => any;
 }
