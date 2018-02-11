@@ -257,8 +257,8 @@ describe('MatchHelper', function () {
 
         it('resolves to equal operator (dictionary)', function () {
             const mb = createMb();
-            let expected: any = { _id: 4 };
-            expect(mb.resolveOperator('id:4')).to.eql(expected);
+            let expected: any = { _id: 100 };
+            expect(mb.resolveOperator('id:100')).to.eql(expected);
             expected = { _id: { $in: [1, 2, 3] } };
             expect(mb.resolveOperator('id:1,2,3')).to.eql(expected);
         });
