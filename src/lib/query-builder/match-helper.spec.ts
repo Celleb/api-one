@@ -178,31 +178,31 @@ describe('MatchHelper', function () {
         });
     });
 
-    describe('.lessOrGreater', function () {
+    describe('.between', function () {
         it('creates and returns an object that specifies a less or greater condition', function () {
             const mb = createMbN();
             const expected = { name: { $lt: 'Jonas', $gt: 'Tomanga' } };
-            expect(mb.lessOrGreater('name', ['Jonas', 'Tomanga'])).to.eql(expected);
+            expect(mb.between('name', ['Jonas', 'Tomanga'])).to.eql(expected);
         });
 
         it('creates and returns an object that specifies a less or greater condition (typified)', function () {
             const mb = createMbN();
             const expected = { _id: { $lt: 3, $gt: 4 } };
-            expect(mb.lessOrGreater('_id', [3, 4])).to.eql(expected);
+            expect(mb.between('_id', [3, 4])).to.eql(expected);
         });
     });
 
-    describe('.lessOrGreaterInc', function () {
+    describe('.betweenInc', function () {
         it('creates and returns an object that specifies a less or greater inclusive condition', function () {
             const mb = createMbN();
             const expected = { name: { $lte: 'Jonas', $gte: 'Tomanga' } };
-            expect(mb.lessOrGreaterInc('name', ['Jonas', 'Tomanga'])).to.eql(expected);
+            expect(mb.betweenInc('name', ['Jonas', 'Tomanga'])).to.eql(expected);
         });
 
         it('creates and returns an object that specifies a less or greater inclusive condition (typified)', function () {
             const mb = createMbN();
             const expected = { _id: { $lte: 3, $gte: 4 } };
-            expect(mb.lessOrGreaterInc('_id', [3, 4])).to.eql(expected);
+            expect(mb.betweenInc('_id', [3, 4])).to.eql(expected);
         });
     });
 
@@ -231,6 +231,120 @@ describe('MatchHelper', function () {
             const mb = createMbN();
             const expected = { _id: { $lt: 4 } };
             expect(mb.less('_id', '4')).to.eql(expected);
+        });
+    });
+
+    describe('.resolveOperator', function () {
+        it('resolves to less-than operator (no dictionary)', function () {
+            const mb = createMbN();
+            let expected = { _id: { $lt: 4 } };
+            expect(mb.resolveOperator('_id<4')).to.eql(expected);
+        });
+
+        it('resolves to less-than operator (dictionary)', function () {
+            const mb = createMb();
+            let expected = { _id: { $lt: 4 } };
+            expect(mb.resolveOperator('id<4')).to.eql(expected);
+        });
+
+        it('resolves to  equal operator (no dictionary)', function () {
+            const mb = createMbN();
+            let expected: any = { _id: 4 };
+            expect(mb.resolveOperator('_id:4')).to.eql(expected);
+            expected = { _id: { $in: [1, 2, 3] } };
+            expect(mb.resolveOperator('_id:1,2,3')).to.eql(expected);
+        });
+
+        it('resolves to equal operator (dictionary)', function () {
+            const mb = createMb();
+            let expected: any = { _id: 4 };
+            expect(mb.resolveOperator('id:4')).to.eql(expected);
+            expected = { _id: { $in: [1, 2, 3] } };
+            expect(mb.resolveOperator('id:1,2,3')).to.eql(expected);
+        });
+
+        it('resolves to  less or equal operator (no dictionary)', function () {
+            const mb = createMbN();
+            let expected: any = { _id: { $lte: 4 } };
+            expect(mb.resolveOperator('_id<:4')).to.eql(expected);
+        });
+
+        it('resolves to  less or equal operator (dictionary)', function () {
+            const mb = createMb();
+            let expected: any = { _id: { $lte: 4 } };
+            expect(mb.resolveOperator('id<:4')).to.eql(expected);
+        });
+
+        it('resolves to  between operator (no dictionary)', function () {
+            const mb = createMbN();
+            let expected: any = { _id: { $lt: 100, $gt: 5 } };
+            expect(mb.resolveOperator('_id<>100,5')).to.eql(expected);
+        });
+
+        it('resolves to  between operator (dictionary)', function () {
+            const mb = createMb();
+            let expected: any = { _id: { $lt: 100, $gt: 5 } };
+            expect(mb.resolveOperator('id<>100,5')).to.eql(expected);
+        });
+
+        it('resolves to  between inclusive operator (no dictionary)', function () {
+            const mb = createMbN();
+            let expected: any = { _id: { $lte: 100, $gte: 5 } };
+            expect(mb.resolveOperator('_id<:>100,5')).to.eql(expected);
+        });
+
+        it('resolves to  between inclusive operator (dictionary)', function () {
+            const mb = createMb();
+            let expected: any = { _id: { $lte: 100, $gte: 5 } };
+            expect(mb.resolveOperator('id<:>100,5')).to.eql(expected);
+        });
+
+        it('resolves to greater operator (no dictionary)', function () {
+            const mb = createMbN();
+            let expected: any = { _id: { $gt: 5 } };
+            expect(mb.resolveOperator('_id>5')).to.eql(expected);
+        });
+
+        it('resolves to  greater operator (dictionary)', function () {
+            const mb = createMb();
+            let expected: any = { _id: { $gt: 5 } };
+            expect(mb.resolveOperator('id>5')).to.eql(expected);
+        });
+
+        it('resolves to greater or equal operator (no dictionary)', function () {
+            const mb = createMbN();
+            let expected: any = { _id: { $gte: 5 } };
+            expect(mb.resolveOperator('_id>:5')).to.eql(expected);
+        });
+
+        it('resolves to greater or equal operator (dictionary)', function () {
+            const mb = createMb();
+            let expected: any = { _id: { $gte: 5 } };
+            expect(mb.resolveOperator('id>:5')).to.eql(expected);
+        });
+
+        it('resolves to not equal operator (no dictionary)', function () {
+            const mb = createMbN();
+            let expected: any = { _id: { $ne: 5 } };
+            expect(mb.resolveOperator('_id!:5')).to.eql(expected);
+            expected = { _id: { $nin: [5, 6, 7] } };
+            expect(mb.resolveOperator('_id!:5,6,7')).to.eql(expected);
+        });
+
+        it('resolves to not equal operator (dictionary)', function () {
+            const mb = createMb();
+            let expected: any = { _id: { $ne: 5 } };
+            expect(mb.resolveOperator('id!:5')).to.eql(expected);
+            expected = { _id: { $nin: [5, 6, 7] } };
+            expect(mb.resolveOperator('id!:5,6,7')).to.eql(expected);
+        });
+
+        it('returns null for no operator match', function () {
+            const mb = createMbN();
+            expect(mb.resolveOperator('id=3')).to.eql(null);
+            expect(mb.resolveOperator(null)).to.eql(null);
+            expect(mb.resolveOperator(false)).to.eql(null);
+            expect(mb.resolveOperator('id,5')).to.eql(null);
         });
     });
 });
