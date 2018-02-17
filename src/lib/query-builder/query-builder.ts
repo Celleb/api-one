@@ -13,6 +13,8 @@ import { Operators } from '../../config';
 import { Mapper, $$ } from '../utils';
 import { Inject } from 'tsjs-di';
 import { MatchHelper } from '../index';
+import { stages } from '../../config/stages';
+import * as _ from 'lodash';
 
 export class QueryBuilder {
 
@@ -28,6 +30,25 @@ export class QueryBuilder {
         this.matcher = new MatchHelper(schemaDef, dictionary);
         this.schemaDef = schemaDef;
 
+    }
+
+    build(query: { [key: string]: string }): { [key: string]: any } {
+        let pipeline = [];
+        for (let stage in query) {
+            if (stages.indexOf(stage) === -1) {
+                continue;
+            }
+
+            if (typeof query[stage] !== 'string') {
+                throw new TypeError('A string is expected for query property used in query builder.');
+            }
+
+            let astage = this[stage](query[stage]);
+            if (astage) {
+                (stage === 'search') ? pipeline.unshift(astage) : pipeline.push(astage);
+            }
+        }
+        return pipeline;
     }
 
     /**

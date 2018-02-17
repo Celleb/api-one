@@ -232,4 +232,86 @@ describe('QueryBuilder', function () {
             expect(qb.match('1')).to.eql(null);
         });
     });
+
+    describe('.build', function () {
+        it('builds an aggregation pipeline from the query string', function () {
+            let query = {
+                match: '_id:4',
+                limit: '10',
+                skip: '5',
+                include: 'firstName'
+            };
+            const expected = [
+                { $match: { _id: 4 } },
+                { $limit: 10 },
+                { $skip: 5 },
+                { $project: { firstName: true } }
+            ];
+            const qb = createQbN();
+            expect(qb.build(query)).to.eql(expected);
+        });
+
+        it('builds an aggregation pipeline from the query string (dictionary)', function () {
+            let query = {
+                match: 'id:4',
+                limit: '10',
+                skip: '5',
+                include: 'name'
+            };
+            const expected = [
+                { $match: { _id: 4 } },
+                { $limit: 10 },
+                { $skip: 5 },
+                { $project: { firstName: true } }
+            ];
+            const qb = createQb();
+            expect(qb.build(query)).to.eql(expected);
+        });
+
+        it('builds an aggregation pipeline from the query string omitting unsupported stages', function () {
+            let query = {
+                matches: '_id:4',
+                limit: '10',
+                skip: '5',
+                include: 'firstName'
+            };
+
+            const expected = [
+                { $limit: 10 },
+                { $skip: 5 },
+                { $project: { firstName: true } }
+            ];
+
+            const qb = createQbN();
+            expect(qb.build(query)).to.eql(expected);
+        });
+
+        it('it puts the search stage first in the aggregation pipeline', function () {
+            let query = {
+                match: '_id:4',
+                search: 'Jonas Tomanga',
+                include: 'firstName'
+            };
+
+            const expected = [
+                { $match: { $text: { $search: 'Jonas Tomanga' } } },
+                { $match: { _id: 4 } },
+                { $project: { firstName: true } }
+            ];
+
+            const qb = createQbN();
+            expect(qb.build(query)).to.eql(expected);
+        });
+
+        it('throws a TypeError exception when a query property is not a string', function () {
+            const qb = createQbN();
+            let query = {
+                match: {
+                    id: 4
+                }
+            };
+
+            expect(() => qb.build(query)).to.throw(TypeError, 'A string is expected for query property used in query builder.');
+        });
+    });
 });
