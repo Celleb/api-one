@@ -32,6 +32,11 @@ export class QueryBuilder {
 
     }
 
+    /**
+     * Puts together the aggregation stages from the specified query object
+     * and returns the aggregation pipeline.
+     * @param query 
+     */
     build(query: { [key: string]: string }): { [key: string]: any } {
         let pipeline = [];
         for (let stage in query) {
@@ -78,6 +83,10 @@ export class QueryBuilder {
         return { $limit };
     }
 
+    /**
+     * Creates a match stage for the aggregation pipeline from the specified match string.
+     * @param match 
+     */
     match(match: string): object {
 
         let $match = null;
