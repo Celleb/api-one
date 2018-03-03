@@ -15,63 +15,31 @@ import { ModelDefinition, ModelOptions, Dictionary, Session, DataOptions, Models
 import { Mapper, $$ } from '../../lib/utils';
 
 export class Model implements ModelOptions {
-    private model: mongoose.Model<any>;
+
+    createAuthMap?: { [key: string]: string } = null;
+    createExclude?: Array<string> = null;
     dictionary: Dictionary = null;
     iDictionary: Dictionary = null;
-    readExclude?: Array<string> = null;
-    createExclude?: Array<string> = null;
-    updateAuthMap?: { [key: string]: string } = null;
-    ownerKey?: string = null;
     exclusive?: Array<string> = null;
-    createAuthMap?: { [key: string]: string } = null;
+    ownerKey?: string = null;
+    readExclude?: Array<string> = null;
     schemaDef: mongoose.SchemaDefinition = null;
+    updateAuthMap?: { [key: string]: string } = null;
+    model: mongoose.Model<any>;
+
     constructor(model: mongoose.Model<any>, modelDef: ModelDefinition) {
         this.model = model;
         this.schemaDef = modelDef.schema;
         this.expandOptions(modelDef.options);
     }
 
-    private expandOptions(modelOptions: ModelOptions): void {
-        for (let option in modelOptions) {
-            if (this.hasOwnProperty(option)) {
-                this[option] = modelOptions[option];
-            }
-        }
-        if (this.dictionary) {
-            this.iDictionary = Mapper.invert(this.dictionary);
-        }
-    }
-
     /**
-     * Creates and returns an owner match object from the session.
-     * @param {Session} session
-     * @returns {Data}
+     * Checks if the express request object has an id parameter.
+     * @param {express.Request} req - Express request object.
+     * @returns {boolean}
      */
-    ownerObject(session: Session): { [key: string]: any } {
-        if (!this.ownerKey) {
-            throw new ReferenceError('Owner key is undefined or null.');
-        }
-        if (!session) {
-            throw new ReferenceError('Session data is undefined or null.');
-        }
-        if (!session.uid) {
-            throw new ReferenceError('User id is undefined or null.');
-        }
-        return { [this.ownerKey]: session.uid };
-    }
-
-    /**
-     * Inserts a new document(s) into the database.
-     * @param {Data | Data[]} data
-     * @param {InsertOptions} options
-     * @returns {mongoose.Document | mongoose.Document[]}
-     */
-    insert(data: Data | Data[], options: DataOptions = {}): Promise<mongoose.Document | mongoose.Document[]> {
-        if (options.reverse && this.dictionary) {
-            data = this.reverse(data);
-        }
-        return (this.dictionary && options.translate) ?
-            this.translator(this.model.create(data)) : this.model.create(data);
+    private checkID(req: express.Request) {
+        return !!(req && req.params && req.params.id);
     }
 
     /**
@@ -84,6 +52,31 @@ export class Model implements ModelOptions {
         const options: DataOptions = { translate, reverse: true };
         this.createAuthMap && this.authMapper(req, this.createAuthMap);
         return this.insert(req.body, options);
+    }
+
+    /**
+     * Removes a document from the database that matches the query.
+     * @param {object} query - The query for document to be matched.
+     * @param {boolean} translate - Flag to translate document keys from database keys to api keys.
+     * @returns {Promise<mongoose.Document>}
+     */
+    delete(query: object, translate?: boolean): Promise<mongoose.Document> {
+        return ((translate && this.dictionary) ? this.translator(this.model.findOneAndRemove(query))
+            : this.model.findOneAndRemove(query)) as Promise<any>;
+    }
+
+    /**
+     * Removes a document from the database that matches the id in req.params.
+     * @param {express.Request} req - Express request object.
+     * @returns {Promise<mongoose.Document>}
+     */
+    deleteByID(req: express.Request): Promise<mongoose.Document> {
+        if (!this.checkID(req)) {
+            return Promise.reject(new ReferenceError('Missing parameter: `id`.'));
+        }
+        return this.delete({ _id: req.params.id }).then(data => {
+            return undefined;
+        });
     }
 
     /**
@@ -117,6 +110,20 @@ export class Model implements ModelOptions {
         return this.findOne({ _id: req.params.id }, options);
     }
 
+    /**
+     * Inserts a new document(s) into the database.
+     * @param {Data | Data[]} data
+     * @param {InsertOptions} options
+     * @returns {mongoose.Document | mongoose.Document[]}
+     */
+    insert(data: Data | Data[], options: DataOptions = {}): Promise<mongoose.Document | mongoose.Document[]> {
+        if (options.reverse && this.dictionary) {
+            data = this.reverse(data);
+        }
+        return (this.dictionary && options.translate) ?
+            this.translator(this.model.create(data)) : this.model.create(data);
+    }
+
 
     /**
      * Modifies a document in the db
@@ -132,6 +139,24 @@ export class Model implements ModelOptions {
         return ((this.dictionary && options.data && options.data.translate) ?
             this.translator(this.model.findOneAndUpdate(query, data, options.query)) :
             this.model.findOneAndUpdate(query, data, options.query)) as Promise<any>;
+    }
+
+    /**
+     * Creates and returns an owner match object from the session.
+     * @param {Session} session
+     * @returns {Data}
+     */
+    ownerObject(session: Session): { [key: string]: any } {
+        if (!this.ownerKey) {
+            throw new ReferenceError('Owner key is undefined or null.');
+        }
+        if (!session) {
+            throw new ReferenceError('Session data is undefined or null.');
+        }
+        if (!session.uid) {
+            throw new ReferenceError('User id is undefined or null.');
+        }
+        return { [this.ownerKey]: session.uid };
     }
 
     /**
@@ -170,31 +195,6 @@ export class Model implements ModelOptions {
     }
 
     /**
-     * Removes a document from the database that matches the query.
-     * @param {object} query - The query for document to be matched.
-     * @param {boolean} translate - Flag to translate document keys from database keys to api keys.
-     * @returns {Promise<mongoose.Document>}
-     */
-    delete(query: object, translate?: boolean): Promise<mongoose.Document> {
-        return ((translate && this.dictionary) ? this.translator(this.model.findOneAndRemove(query))
-            : this.model.findOneAndRemove(query)) as Promise<any>;
-    }
-
-    /**
-     * Removes a document from the database that matches the id in req.params.
-     * @param {express.Request} req - Express request object.
-     * @returns {Promise<mongoose.Document>}
-     */
-    deleteByID(req: express.Request): Promise<mongoose.Document> {
-        if (!this.checkID(req)) {
-            return Promise.reject(new ReferenceError('Missing parameter: `id`.'));
-        }
-        return this.delete({ _id: req.params.id }).then(data => {
-            return undefined;
-        });
-    }
-
-    /**
      * Roles back changes made to the database.
      * @param {string|number} id - Document `_id`
      * @param {Data} data
@@ -212,20 +212,6 @@ export class Model implements ModelOptions {
         return this.delete({ _id: id }).then(doc => {
             return null;
         });
-    }
-
-    /*** Utitilies below */
-    private translator<T extends any>(promise: T): Promise<T> {
-        return promise.then(this.translate);
-    }
-
-    /**
-     * Checks if the express request object has an id parameter.
-     * @param {express.Request} req - Express request object.
-     * @returns {boolean}
-     */
-    private checkID(req: express.Request) {
-        return !!(req && req.params && req.params.id);
     }
 
     /**
@@ -268,15 +254,29 @@ export class Model implements ModelOptions {
         }
     }
 
+    private expandOptions(modelOptions: ModelOptions): void {
+        for (let option in modelOptions) {
+            if (this.hasOwnProperty(option)) {
+                this[option] = modelOptions[option];
+            }
+        }
+        if (this.dictionary) {
+            this.iDictionary = Mapper.invert(this.dictionary);
+        }
+    }
+
+    /*** Utitilies below */
+    private translator<T extends any>(promise: T): Promise<T> {
+        return promise.then(this.translate);
+    }
+
     /*** statics below */
     /**
      * Creates a new Model
      * @param {string} name - The name of the model
      * @returns {Model}
      */
-    static create(name: string): Model {
-        const models: Models = DI.inject('Models');
-        const [model, modelDef] = [models.model(name), models.modelDef(name)];
+    static create(model: mongoose.Model<any>, modelDef: ModelDefinition): Model {
         return new Model(model, modelDef);
     }
 }
