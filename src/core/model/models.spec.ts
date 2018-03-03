@@ -13,6 +13,7 @@ import * as chai from 'chai';
 import * as sinon from 'sinon';
 const expect = chai.expect;
 const Models = require('../dist/core/model').Models;
+const Model = require('../dist/core/model').Model;
 import { DI } from 'tsjs-di';
 
 const Database = {
@@ -42,10 +43,9 @@ describe('Models', function () {
             Database.model.resetHistory();
             const models = Models.create();
             expect(models.add('Auth', {}, {}, {})).to.not.throw;
-            expect(models.models).to.of.length(1);
-            const expected = { name: 'Auth', schema: {}, schemaDef: {}, options: {} };
-            expect(models.models).to.deep.include(expected);
-            expect(Database.model.calledWith(expected.name, expected.schema)).to.be.ok;
+            expect(models.models.size).to.eql(1);
+            expect(models.modelDefs.size).to.eql(1);
+            expect(Database.model.calledWith('Auth', {})).to.be.ok;
         });
     });
 
@@ -53,9 +53,9 @@ describe('Models', function () {
         it('returns the model', function () {
             Database.model.resetHistory();
             const models = Models.create();
+            models.add('Auth', {}, {}, {});
             const model = models.model('Auth');
-            expect(Database.model.calledWith('Auth')).to.be.ok;
-            expect(model).to.eql({});
+            expect(models.model('Auth')).to.be.instanceOf(Model);
         });
     });
 

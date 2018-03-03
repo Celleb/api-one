@@ -10,14 +10,17 @@
 import * as mongoose from 'mongoose';
 import { Database } from '../../lib/database/database';
 import { ModelOptions, ModelDefinition } from '../types';
+import { Model } from './model';
 import { DI } from 'tsjs-di';
 
 export class Models {
     private db: mongoose.Connection;
-    private models: ModelDefinition[];
+    private modelDefs: Map<string, ModelDefinition>;
+    private models: Map<string, Model>;
     private constructor(db: mongoose.Connection) {
         this.db = db;
-        this.models = [];
+        this.modelDefs = new Map();
+        this.models = new Map()
     }
 
 
@@ -29,13 +32,15 @@ export class Models {
      * @param options - Model options
      */
     add(name: string, schema: mongoose.Schema, schemaDef: mongoose.SchemaDefinition, options: ModelOptions): Models {
-        this.db.model(name, schema);
-        this.models.push({
+        const model = this.db.model(name, schema);
+        const modelDef = {
             name,
             schema,
             schemaDef,
             options
-        });
+        };
+        this.models.set(name, Model.create(model, modelDef));
+        this.modelDefs.set(name, modelDef);
         return this;
     }
 
@@ -44,18 +49,16 @@ export class Models {
      * @param {string} name - The name of the model
      * @returns mongoose model
      */
-    model(name: string): mongoose.Model<any> {
-        return this.db.model(name);
+    model(name: string): Model {
+        return this.models.get(name);
     }
 
     /**
      * Retrieves and returns the model definition.
      * @param {string} name - The name of the model
      */
-    modelDef(name: string): ModelDefinition | undefined {
-        return this.models.find((model: ModelDefinition) => {
-            return (model.name === name);
-        });
+    modelDef(name: string): ModelDefinition {
+        return this.modelDefs.get(name);
     }
 
     /**
