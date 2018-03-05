@@ -7,10 +7,4 @@
  * @license MIT
  */
 
-export const CRUD = {
-    create: 'post',
-    read: 'get',
-    update: 'put',
-    delete: 'delete',
-    patch: 'patch'
-}
+export const methods = ['post', 'patch', 'get', 'delete'];
