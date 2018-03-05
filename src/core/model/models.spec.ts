@@ -6,6 +6,7 @@
  * All rights reserved
  * @license MIT
  */
+
 'use strict';
 declare var require: any;
 import * as mocha from 'mocha';
