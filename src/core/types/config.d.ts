@@ -21,5 +21,6 @@ export interface Config {
         helmet?: boolean;
         csurf: boolean;
     },
-    dbConfig: DatabaseConfig | DatabaseConfig[]
+    dbConfig: DatabaseConfig | DatabaseConfig[],
+
 }

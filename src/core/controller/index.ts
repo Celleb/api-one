@@ -7,6 +7,4 @@
  * @license MIT
  */
 
-export * from './types';
-export * from './model';
-export * from './controller';
+export * from './route-controller';

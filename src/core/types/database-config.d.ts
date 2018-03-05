@@ -17,10 +17,10 @@ export interface DatabaseConfig {
     username?: string;
     password?: string;
     authSource?: string;
-    queryOptions: string;
+    queryOptions?: string;
     replicaSet?: {
         name: string;
         hosts: Array<string>
     };
-    options: mongoose.ConnectionOptions;
+    options?: mongoose.ConnectionOptions;
 }
