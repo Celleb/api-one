@@ -8,4 +8,4 @@
  */
 export * from './default-schema-options';
 export * from './default-operators';
-export * from './crud';
+export * from './methods';
