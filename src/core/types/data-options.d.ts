@@ -1,5 +1,5 @@
 /**
- * insert-options.d.ts
+ * data-options.d.ts
  *
  * @author Jonas Tomanga <celleb@mrcelleb.com>
  * @copyright (c) 2017 Jonas Tomanga
@@ -19,6 +19,7 @@ export interface UpdateOptions {
 }
 
 export interface FindOptions {
-    translate?: boolean,
-    lean?: boolean
+    translate?: boolean;
+    lean?: boolean;
+    preMatch?: { [key: string]: any };
 }
