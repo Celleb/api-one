@@ -12,6 +12,8 @@ import * as mocha from 'mocha';
 import * as chai from 'chai';
 import * as sinon from 'sinon';
 import { DI } from 'tsjs-di';
+import * as express from 'express';
+import { Router } from 'express';
 const expect = chai.expect;
 
 const RouteController = require('../dist/core').RouteController;
@@ -89,7 +91,7 @@ const Models = {
     }
 };
 
-function createController(rc?) {
+function createRouter(rc?) {
     DI.clear();
     DI.register([{ provide: 'Config', useValue: config }, { provide: 'Models', useValue: Models }])
     return RouteController.create(rc || routeConfig);
@@ -98,9 +100,9 @@ function createController(rc?) {
 describe('RouteController', function () {
 
     describe('#create', function () {
-        it('creates a new instance of RouteController', function () {
-            const rc = createController();
-            expect(rc).to.be.instanceOf(RouteController);
+        it('creates a new Router', function () {
+            const rc = createRouter();
+            expect(rc).to.be.a('function');
         });
     });
 });

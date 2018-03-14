@@ -26,10 +26,25 @@ export class RouteController {
         this.router = express.Router();
     }
 
+    getRouter(): express.Router {
+        this.attachHandlers();
+
+        return this.router;
+    }
+
     private attachHandlers() {
         for (let method in Methods) {
             if (!this.routeConfig.methods || this.routeConfig.methods[method]) {
-
+                // this[method]();
+                switch (method) {
+                    case 'get': this.get();
+                        break;
+                    case 'delete': this.delete();
+                        break;
+                    case 'patch': this.patch();
+                        break;
+                    case 'post': this.post();
+                }
             }
         }
     }
@@ -87,7 +102,7 @@ export class RouteController {
     }
 
     /**
-     * Returns handler(s)/middleware that should run before the main request handler
+     * Returns handler(s)/middleware that should run before the main request handler.
      * @param method 
      */
     private preWare(method: string) {
@@ -101,7 +116,7 @@ export class RouteController {
     }
 
     /**
-     * Adds handler(s) for a post request to the router
+     * Adds handler(s) for a post request to the router.
      */
     private patch() {
         this.router.post('/:id', this.preWare('patch'), (req: express.Request, res: express.Response, next: express.NextFunction) => {
@@ -115,7 +130,7 @@ export class RouteController {
     }
 
     /**
-     * Adds handler(s) for a post request to the router
+     * Adds handler(s) for a post request to the router.
      */
     private post() {
         this.router.post('/', this.preWare('post'), (req: express.Request, res: express.Response, next: express.NextFunction) => {
@@ -130,7 +145,7 @@ export class RouteController {
 
 
     /**
-     * Returns handler(s)/middleware that should run after the main request handler
+     * Returns handler(s)/middleware that should run after the main request handler.
      * @param method
      */
     private postWare(method: string): express.Handler {
@@ -145,14 +160,17 @@ export class RouteController {
 
 
     /**
-     * Creates a new instance of RouteControllers
+     * Creates a new instance of RouteControllers and return an express Router.
      * @param routeConfig 
      */
-    static create(routeConfig: RouteConfig): RouteController {
+    static create(routeConfig: RouteConfig): express.Router {
         const models = DI.inject('Models');
         const config = DI.inject('Config');
 
-        return new this(config, models, routeConfig);
+        const rc = new this(config, models, routeConfig);
+
+        return rc.getRouter();
+
     }
 
 
