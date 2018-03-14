@@ -96,8 +96,6 @@ export class Model implements ModelOptions {
             pipeline.unshift({ $match: options.preMatch });
         }
 
-        console.log(pipeline);
-
         return (options.translate && this.dictionary) ? this.translator(this.model.aggregate(pipeline))
             : this.model.aggregate(pipeline);
     }
