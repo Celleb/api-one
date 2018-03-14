@@ -14,4 +14,9 @@ declare module 'express' {
         session: Session;
         $owner: boolean;
     }
+
+    interface Response {
+        $output: any;
+        $json: (...args: any[]) => any;
+    }
 }
