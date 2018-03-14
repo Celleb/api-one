@@ -90,21 +90,21 @@ export class Model implements ModelOptions {
      * @param req - Express request object
      * @param options 
      */
-    find(req: express.Request, options: FindOptions = {}) {
+    find(req: express.Request, options: FindOptions = {}): Promise<any> {
         let pipeline = this.qb.build(req.query);
         if (options.preMatch) {
             pipeline.unshift({ $match: options.preMatch });
         }
 
-        return (options.translate && this.dictionary) ? this.translator(this.model.aggregate(pipeline))
-            : this.model.aggregate(pipeline);
+        return ((options.translate && this.dictionary) ? this.translator(this.model.aggregate(pipeline))
+            : this.model.aggregate(pipeline)) as any;
     }
 
     /**
      * Returns all documents that matches the specified query with defualt options.
      * @param req - Express request object
      */
-    findAll(req: express.Request) {
+    findAll(req: express.Request): Promise<any> {
 
         let options: FindOptions = {
             translate: true
