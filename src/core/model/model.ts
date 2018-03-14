@@ -13,24 +13,27 @@ import * as mongoose from 'mongoose';
 import * as express from 'express';
 import { ModelDefinition, ModelOptions, Dictionary, Session, DataOptions, Models, UpdateOptions, FindOptions } from '../';
 import { Mapper, $$ } from '../../lib/utils';
+import { QueryBuilder } from '../../lib';
 
 export class Model implements ModelOptions {
 
     createAuthMap?: { [key: string]: string } = null;
     createExclude?: Array<string> = null;
     dictionary: Dictionary = null;
-    iDictionary: Dictionary = null;
     exclusive?: Array<string> = null;
+    iDictionary: Dictionary = null;
+    model: mongoose.Model<any>;
     ownerKey?: string = null;
     readExclude?: Array<string> = null;
     schemaDef: mongoose.SchemaDefinition = null;
     updateAuthMap?: { [key: string]: string } = null;
-    model: mongoose.Model<any>;
+    private qb: QueryBuilder;
 
     constructor(model: mongoose.Model<any>, modelDef: ModelDefinition) {
         this.model = model;
-        this.schemaDef = modelDef.schema;
+        this.schemaDef = modelDef.schemaDef;
         this.expandOptions(modelDef.options);
+        this.qb = QueryBuilder.create(this.schemaDef, this.dictionary);
     }
 
     /**
@@ -39,6 +42,7 @@ export class Model implements ModelOptions {
      * @returns {boolean}
      */
     private checkID(req: express.Request) {
+
         return !!(req && req.params && req.params.id);
     }
 
@@ -51,6 +55,7 @@ export class Model implements ModelOptions {
     create(req: express.Request, translate?: boolean): Promise<mongoose.Document | mongoose.Document[]> {
         const options: DataOptions = { translate, reverse: true };
         this.createAuthMap && this.authMapper(req, this.createAuthMap);
+
         return this.insert(req.body, options);
     }
 
@@ -74,9 +79,44 @@ export class Model implements ModelOptions {
         if (!this.checkID(req)) {
             return Promise.reject(new ReferenceError('Missing parameter: `id`.'));
         }
+
         return this.delete({ _id: req.params.id }).then(data => {
             return undefined;
         });
+    }
+
+    /**
+     * Returns all documents that matches the specified query.
+     * @param req - Express request object
+     * @param options 
+     */
+    find(req: express.Request, options: FindOptions = {}) {
+        let pipeline = this.qb.build(req.query);
+        if (options.preMatch) {
+            pipeline.unshift({ $match: options.preMatch });
+        }
+
+        console.log(pipeline);
+
+        return (options.translate && this.dictionary) ? this.translator(this.model.aggregate(pipeline))
+            : this.model.aggregate(pipeline);
+    }
+
+    /**
+     * Returns all documents that matches the specified query with defualt options.
+     * @param req - Express request object
+     */
+    findAll(req: express.Request) {
+
+        let options: FindOptions = {
+            translate: true
+        }
+
+        if (req.$owner) {
+            options = { ...options, preMatch: this.ownerObject(req.session) };
+        }
+
+        return this.find(req, options);
     }
 
     /**
@@ -90,6 +130,7 @@ export class Model implements ModelOptions {
         if (options.lean) {
             lean = true;
         }
+
         return ((options.translate && this.dictionary) ? this.translator(this.model.findOne(query, { lean }))
             : this.model.findOne(query, { lean })) as any;
     }
@@ -107,6 +148,7 @@ export class Model implements ModelOptions {
             translate: true,
             lean: true
         };
+
         return this.findOne({ _id: req.params.id }, options);
     }
 
@@ -120,6 +162,7 @@ export class Model implements ModelOptions {
         if (options.reverse && this.dictionary) {
             data = this.reverse(data);
         }
+
         return (this.dictionary && options.translate) ?
             this.translator(this.model.create(data)) : this.model.create(data);
     }
@@ -136,6 +179,7 @@ export class Model implements ModelOptions {
         if (options.data && options.data.reverse && this.dictionary) {
             data = this.reverse(data);
         }
+
         return ((this.dictionary && options.data && options.data.translate) ?
             this.translator(this.model.findOneAndUpdate(query, data, options.query)) :
             this.model.findOneAndUpdate(query, data, options.query)) as Promise<any>;
@@ -150,12 +194,15 @@ export class Model implements ModelOptions {
         if (!this.ownerKey) {
             throw new ReferenceError('Owner key is undefined or null.');
         }
+
         if (!session) {
             throw new ReferenceError('Session data is undefined or null.');
         }
+
         if (!session.uid) {
             throw new ReferenceError('User id is undefined or null.');
         }
+
         return { [this.ownerKey]: session.uid };
     }
 
@@ -171,12 +218,14 @@ export class Model implements ModelOptions {
             const owner = this.ownerObject(req.session);
             query = { ...query, ...owner };
         }
+
         if (req.query && $$.strToBool(req.query.current)) {
             if (!options.query) {
                 options.query = {};
             }
             options.query['new'] = true;
         }
+
         return this.modify(query, req.body, options);
     }
 
@@ -190,6 +239,7 @@ export class Model implements ModelOptions {
             data: { translate: true, reverse: true },
             query: { new: true }
         };
+
         return this.checkID(req) ? this.patch({ _id: req.params.id }, req, options) :
             Promise.reject(new ReferenceError('Missing parameter: `id`.'));
     }
@@ -206,9 +256,11 @@ export class Model implements ModelOptions {
         if (insert && data) {
             options = { ...{ query: { upsert: true } }, ...options };
         }
+
         if (data) {
             return this.modify({ _id: id }, data, options);
         }
+
         return this.delete({ _id: id }).then(doc => {
             return null;
         });
@@ -222,6 +274,7 @@ export class Model implements ModelOptions {
      */
     reverse = (data: Data | Data[], dictionary?: Dictionary): Data | Data[] => {
         dictionary = dictionary ? dictionary : this.iDictionary;
+
         return Mapper.map(data, dictionary) as mongoose.Document;
     }
 
@@ -233,6 +286,7 @@ export class Model implements ModelOptions {
      */
     translate = (data: mongoose.Document | mongoose.Document[], dictionary?: Dictionary): mongoose.Document | mongoose.Document[] => {
         dictionary = dictionary ? dictionary : this.dictionary;
+
         return Mapper.map(data, dictionary) as mongoose.Document;
     }
 
@@ -245,6 +299,7 @@ export class Model implements ModelOptions {
         if (!req.session) {
             return;
         }
+
         for (let key in map) {
             if (req.session[key]) {
                 req.body[key] = req.session[key];
@@ -260,6 +315,7 @@ export class Model implements ModelOptions {
                 this[option] = modelOptions[option];
             }
         }
+
         if (this.dictionary) {
             this.iDictionary = Mapper.invert(this.dictionary);
         }
@@ -267,6 +323,7 @@ export class Model implements ModelOptions {
 
     /*** Utitilies below */
     private translator<T extends any>(promise: T): Promise<T> {
+
         return promise.then(this.translate);
     }
 
@@ -277,6 +334,7 @@ export class Model implements ModelOptions {
      * @returns {Model}
      */
     static create(model: mongoose.Model<any>, modelDef: ModelDefinition): Model {
+
         return new Model(model, modelDef);
     }
 }

@@ -26,6 +26,7 @@ const dictionary = {
         members: 'memb'
     }
 };
+
 const mainData = {
     firstName: 'Jon',
     lastName: 'Manga',
@@ -33,6 +34,7 @@ const mainData = {
         members: 5
     }
 };
+
 const transData = {
     name: 'Jon',
     surname: 'Manga',
@@ -40,6 +42,7 @@ const transData = {
         memb: 5
     }
 };
+
 const findOneAndUpdate = function (query, update) {
     const data = { ...mainData };
     for (let key in update) {
@@ -49,12 +52,19 @@ const findOneAndUpdate = function (query, update) {
     }
     return Promise.resolve(data);
 };
+
 const findOne = function (query, options) {
     return Promise.resolve(mainData);
 };
+
 const findOneAndRemove = function (query) {
     return Promise.resolve(mainData);
 };
+
+function aggregate(pipeline) {
+    return Promise.resolve([mainData]);
+}
+
 const create = function (docs) {
     return Promise.resolve(docs);
 };
@@ -63,7 +73,8 @@ const _model = {
     create,
     findOne,
     findOneAndUpdate,
-    findOneAndRemove
+    findOneAndRemove,
+    aggregate
 };
 
 const modelOptions = {
@@ -615,12 +626,14 @@ describe('Model', function () {
             sinon.spy(model, 'delete');
             return expect(model.rollback({ _id: 1 })).to.eventually.eql(null);
         });
+
         it('rolls back updated content', function () {
             const model = createModel();
             const data = { firstName: 'James' };
             const expectedData = { ...mainData, ...data };
             return expect(model.rollback(2, data)).to.eventually.eql(expectedData);
         });
+
         it('rolls back updated content with options', function () {
             const model = createModel();
             sinon.spy(model, 'modify');
@@ -632,6 +645,7 @@ describe('Model', function () {
             });
             expect(model.modify.calledWith({ _id: 2 }, {}, options)).to.be.ok;
         });
+
         it('it rolls back deleted content', function () {
             const model = createModel();
             const data = {
@@ -651,6 +665,98 @@ describe('Model', function () {
             const results = model.rollback(2, data, true);
             expect(model.modify.calledWith({ _id: 2 }, data, options)).to.be.ok;
             return expect(results).to.eventually.eql(data);
+        });
+    });
+
+
+    describe('.find', function () {
+        it('should be a function', function () {
+            const model = createModel();
+            expect(model.find).to.be.a('function');
+        });
+
+        it('returns all the matching data', function () {
+            const model = createModel();
+            expect(model.find({}, {})).to.eventually.eql([mainData]);
+        });
+
+        it('appends the pipeline', function () {
+            const model = createModel();
+            const options = {
+                preMatch: {}
+            };
+
+            const req = {
+                query: {
+                    match: 'id:2'
+                }
+            };
+
+            sinon.spy(model.model, 'aggregate');
+
+            after(function () {
+                model.model.aggregate.restore();
+            });
+
+            const expectedPipeline = [{ $match: {} }, { $match: { id: '2' } }];
+            model.find(req, options);
+            expect(model.model.aggregate.calledWith(expectedPipeline)).to.be.ok;
+        });
+
+        it('translates the data', function () {
+            const model = createModel();
+            const options = {
+                preMatch: { $match: {} }
+            };
+            const req = {};
+
+            return expect(model.find(req, { translate: true })).to.eventually.eql([transData]);
+        });
+    });
+
+    describe('.findAll', function () {
+        it('should be a function', function () {
+            const model = createModel();
+            expect(model.findAll).to.be.a('function');
+        });
+
+        it('returns all matchings doc amd translates the data', function () {
+            const model = createModel();
+            const options = {
+                preMatch: {}
+            };
+            const req = {};
+
+            return expect(model.findAll(req)).to.eventually.eql([transData]);
+        });
+
+        it('prematch owner documents', function () {
+            let model = createModel();
+            model.ownerKey = '_id';
+
+            const options = {
+                preMatch: { $match: {} }
+            };
+
+            const req = {
+                query: {
+                    match: 'id:2'
+                },
+                session: {
+                    uid: 1
+                },
+                $owner: true
+            };
+
+            //    sinon.spy(model.model, 'aggregate');
+
+            after(function () {
+                // model.model.aggregate.restore();
+            });
+
+            const expectedPipeline = [{ $match: { _id: 1 } }, { $match: { id: '2' } }];
+            model.findAll(req, options);
+            expect(model.model.aggregate.calledWith(expectedPipeline)).to.be.ok;
         });
     });
 });
