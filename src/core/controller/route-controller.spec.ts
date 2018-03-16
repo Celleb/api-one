@@ -102,6 +102,7 @@ describe('RouteController', function () {
     describe('#create', function () {
         it('creates a new Router', function () {
             const rc = createRouter();
+
             expect(rc).to.be.a('function');
         });
     });

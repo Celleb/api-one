@@ -26,16 +26,23 @@ export class RouteController {
         this.router = express.Router();
     }
 
+    /**
+     * Returns the router.
+     */
     getRouter(): express.Router {
         this.attachHandlers();
 
         return this.router;
     }
 
+    /**
+     * Attach route handlers to the router.
+     */
     private attachHandlers() {
-        for (let method in Methods) {
-            if (!this.routeConfig.methods || this.routeConfig.methods[method]) {
-                // this[method]();
+
+        for (let method of Methods) {
+            if (!this.routeConfig.methods || (this.routeConfig.methods.indexOf(method) !== -1)) {
+
                 switch (method) {
                     case 'get': this.get();
                         break;
@@ -50,9 +57,10 @@ export class RouteController {
     }
 
     /**
-     * Adds handler(s) for a get request to the router
+     * Adds handler(s) for a get request to the router.
      */
     private get() {
+        console.log('get');
 
         // get a single doc
         this.router.get('/:id', this.preWare('get'), (req: express.Request, res: express.Response, next: express.NextFunction) => {
@@ -76,7 +84,7 @@ export class RouteController {
     }
 
     /**
-     * Adds handler(s) for a delete request to the router
+     * Adds handler(s) for a delete request to the router.
      */
     private delete() {
 
@@ -93,7 +101,7 @@ export class RouteController {
     }
 
     /**
-     * Handler for returning output to the client
+     * Handler for returning output to the client.
      * @param req 
      * @param res 
      */
