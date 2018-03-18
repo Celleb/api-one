@@ -8,10 +8,10 @@
  * @license MIT
  */
 
-import { Config, Model, RouteConfig, Models } from '../';
+import { Config, Model, RouteConfig } from '../';
 import * as express from 'express';
 import { DI } from 'tsjs-di';
-import { Methods } from '../../config';
+import { METHODS } from '../../config';
 
 export class RouteController {
 
@@ -40,7 +40,7 @@ export class RouteController {
      */
     private attachHandlers() {
 
-        for (let method of Methods) {
+        for (let method of METHODS) {
             if (!this.routeConfig.methods || (this.routeConfig.methods.indexOf(method) !== -1)) {
 
                 switch (method) {
@@ -171,11 +171,11 @@ export class RouteController {
      * Creates a new instance of RouteControllers and return an express Router.
      * @param routeConfig 
      */
-    static create(routeConfig: RouteConfig): express.Router {
-        const models = DI.inject('Models');
-        const config = DI.inject('Config');
+    static create(routeConfig: RouteConfig, model: Model, config: Config): express.Router {
+        // const models = DI.inject('Models');
+        // const config = DI.inject('Config');
 
-        const rc = new this(config, models, routeConfig);
+        const rc = new this(config, model, routeConfig);
 
         return rc.getRouter();
 

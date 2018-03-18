@@ -7,10 +7,11 @@
  * @license MIT
  */
 
-import { Config } from "../core";
+import { Config } from '../core';
+import { OPERATORS } from './default-operators';
+import { SCHEMA_OPTIONS } from './default-schema-options';
 
-
-export let config: Config = {
+export const CONFIG: Config = {
     name: 'API-ONE',
     port: 8080,
     env: 'development',
@@ -26,5 +27,7 @@ export let config: Config = {
         name: 'ApiOne',
         host: 'localhost',
         port: 27017
-    }
+    },
+    operators: OPERATORS,
+    schemaOptions: SCHEMA_OPTIONS
 }

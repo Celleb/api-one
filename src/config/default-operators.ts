@@ -20,7 +20,7 @@ export class Operators implements OperatorsInterface {
     equal;
 }
 
-export const defaultOperators: Operators = {
+export const OPERATORS: Operators = {
     betweenInc: '<:>',
     between: '<>',
     greaterOrEqual: '>:',

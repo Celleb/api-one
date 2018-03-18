@@ -7,4 +7,4 @@
  * @license MIT
  */
 
-export const Methods = ['post', 'patch', 'get', 'delete'];
+export const METHODS = ['post', 'patch', 'get', 'delete'];

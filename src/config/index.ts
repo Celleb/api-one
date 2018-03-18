@@ -9,3 +9,4 @@
 export * from './default-schema-options';
 export * from './default-operators';
 export * from './methods';
+export * from './config';

@@ -18,6 +18,7 @@ const expect = chai.expect;
 
 const RouteController = require('../dist/core').RouteController;
 const Model = require('../dist/core').Model;
+const getModel = require('../dist/model.mock').getModel;
 
 const config = {
 
@@ -51,31 +52,9 @@ const transData = {
         memb: 5
     }
 };
-const findOneAndUpdate = function (query, update) {
-    const data = { ...mainData };
-    for (let key in update) {
-        if (data.hasOwnProperty(key)) {
-            data[key] = update[key];
-        }
-    }
-    return Promise.resolve(data);
-};
-const findOne = function (query, options) {
-    return Promise.resolve(mainData);
-};
-const findOneAndRemove = function (query) {
-    return Promise.resolve(mainData);
-};
-const create = function (docs) {
-    return Promise.resolve(docs);
-};
 
-const _model = {
-    create,
-    findOne,
-    findOneAndUpdate,
-    findOneAndRemove
-};
+
+const _model = getModel(mainData);
 
 const modelOptions = {
     name: 'users',
@@ -85,16 +64,10 @@ const modelOptions = {
     }
 };
 
-const Models = {
-    model: function () {
-        return Model.create(_model, modelOptions);
-    }
-};
 
 function createRouter(rc?) {
-    DI.clear();
-    DI.register([{ provide: 'Config', useValue: config }, { provide: 'Models', useValue: Models }])
-    return RouteController.create(rc || routeConfig);
+
+    return RouteController.create(rc || routeConfig, Model.create(_model, modelOptions, config));
 }
 
 describe('RouteController', function () {

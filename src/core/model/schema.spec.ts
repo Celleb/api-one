@@ -18,7 +18,6 @@ const Schema = require('../dist/core/model').Schema;
 import { DI } from 'tsjs-di';
 
 
-
 describe('Schema', function () {
     describe('#create', function () {
         it('is a function', function () {

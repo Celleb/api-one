@@ -17,6 +17,7 @@ chai.use(chaiPromised);
 const expect = chai.expect;
 
 const Model = require('../dist/core/model').Model;
+const getModel = require('../dist/model.mock').getModel;
 
 const dictionary = {
     firstName: 'name',
@@ -43,39 +44,9 @@ const transData = {
     }
 };
 
-const findOneAndUpdate = function (query, update) {
-    const data = { ...mainData };
-    for (let key in update) {
-        if (data.hasOwnProperty(key)) {
-            data[key] = update[key];
-        }
-    }
-    return Promise.resolve(data);
-};
 
-const findOne = function (query, options) {
-    return Promise.resolve(mainData);
-};
 
-const findOneAndRemove = function (query) {
-    return Promise.resolve(mainData);
-};
-
-function aggregate(pipeline) {
-    return Promise.resolve([mainData]);
-}
-
-const create = function (docs) {
-    return Promise.resolve(docs);
-};
-
-const _model = {
-    create,
-    findOne,
-    findOneAndUpdate,
-    findOneAndRemove,
-    aggregate
-};
+const _model = getModel(mainData);
 
 const modelOptions = {
     name: 'users',

@@ -16,12 +16,14 @@ export class Schema {
     }
 
     getSchema(): mongoose.Schema {
+
         return this.schema;
     }
 
     static create(schemaDef: mongoose.SchemaDefinition, options?: mongoose.SchemaOptions) {
         const defaultOptions = DI.inject('DefaultSchemaOptions');
         options = Object.assign({}, defaultOptions, options);
+
         return (new this(schemaDef, options));
     }
 }

@@ -9,7 +9,7 @@
 import * as mongoose from 'mongoose';
 
 export type DefaultSchemaOptions = mongoose.SchemaOptions;
-export const defaultSchemaOptions: DefaultSchemaOptions = {
+export const SCHEMA_OPTIONS: DefaultSchemaOptions = {
     toJSON: { getters: true, virtuals: true },
     toObject: { getters: true, virtuals: true },
     bufferCommands: false

@@ -7,6 +7,8 @@
  * @license MIT
  */
 import { DatabaseConfig } from '../';
+import { Operators, DefaultSchemaOptions } from '../../config';
+import * as mongoose from 'mongoose';
 
 export interface Config {
     name: string;
@@ -22,5 +24,6 @@ export interface Config {
         csurf: boolean;
     },
     dbConfig: DatabaseConfig | DatabaseConfig[],
-
+    operators: Operators,
+    schemaOptions: DefaultSchemaOptions
 }
