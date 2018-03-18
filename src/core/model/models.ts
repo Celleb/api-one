@@ -26,21 +26,14 @@ export class Models {
 
     /**
      * Adds the model definition and defines the mongoose model on the database connection.
-     * @param name - The name of the model
-     * @param schema - Mongoose schema
-     * @param schemaDef - Mongoose Schema Definition
-     * @param options - Model options
+     * @param modelDef
      */
-    add(name: string, schema: mongoose.Schema, schemaDef: mongoose.SchemaDefinition, options: ModelOptions): Models {
-        const model = this.db.model(name, schema);
-        const modelDef = {
-            name,
-            schema,
-            schemaDef,
-            options
-        };
-        this.models.set(name, Model.create(model, modelDef));
-        this.modelDefs.set(name, modelDef);
+    add(modelDef: ModelDefinition): Models {
+        const model = this.db.model(modelDef.name, modelDef.schema);
+
+        this.models.set(modelDef.name, Model.create(model, modelDef));
+        this.modelDefs.set(modelDef.name, modelDef);
+
         return this;
     }
 

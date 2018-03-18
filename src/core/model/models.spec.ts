@@ -43,7 +43,13 @@ describe('Models', function () {
         it('adds a new model definition and model to the database', function () {
             Database.model.resetHistory();
             const models = Models.create();
-            expect(models.add('Auth', {}, {}, {})).to.not.throw;
+            const modelDef = {
+                name: 'Auth',
+                schema: {},
+                schemaDef: {},
+                options: {}
+            }
+            expect(models.add(modelDef)).to.not.throw;
             expect(models.models.size).to.eql(1);
             expect(models.modelDefs.size).to.eql(1);
             expect(Database.model.calledWith('Auth', {})).to.be.ok;
@@ -54,7 +60,13 @@ describe('Models', function () {
         it('returns the model', function () {
             Database.model.resetHistory();
             const models = Models.create();
-            models.add('Auth', {}, {}, {});
+            const modelDef = {
+                name: 'Auth',
+                schema: {},
+                schemaDef: {},
+                options: {}
+            }
+            models.add(modelDef);
             const model = models.model('Auth');
             expect(models.model('Auth')).to.be.instanceOf(Model);
         });
@@ -65,7 +77,13 @@ describe('Models', function () {
             Database.model.resetHistory();
             const models = Models.create();
             const expected = { name: 'Auth', schema: {}, schemaDef: {}, options: {} };
-            models.add('Auth', {}, {}, {});
+            const modelDef = {
+                name: 'Auth',
+                schema: {},
+                schemaDef: {},
+                options: {}
+            }
+            models.add(modelDef);
             expect(models.modelDef('Auth')).to.eql(expected);
             expect(Database.model.calledWith('Auth')).to.be.ok;
         });
