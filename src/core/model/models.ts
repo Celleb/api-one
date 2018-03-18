@@ -43,6 +43,7 @@ export class Models {
      * @returns mongoose model
      */
     model(name: string): Model {
+
         return this.models.get(name);
     }
 
@@ -51,6 +52,7 @@ export class Models {
      * @param {string} name - The name of the model
      */
     modelDef(name: string): ModelDefinition {
+
         return this.modelDefs.get(name);
     }
 
