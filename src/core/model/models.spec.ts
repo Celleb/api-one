@@ -40,7 +40,7 @@ describe('Models', function () {
     });
 
     describe('.add', function () {
-        it('adds a new model definition and model to the database', function () {
+        it('adds a new model definition and creates and adds the model to the database', function () {
             Database.model.resetHistory();
             const models = Models.create();
             const modelDef = {
@@ -50,6 +50,22 @@ describe('Models', function () {
                 options: {}
             }
             expect(models.add(modelDef)).to.not.throw;
+            expect(models.models.size).to.eql(1);
+            expect(models.modelDefs.size).to.eql(1);
+            expect(Database.model.calledWith('Auth', {})).to.be.ok;
+        });
+
+        it('adds a new model definition and model to the database', function () {
+            Database.model.resetHistory();
+            const models = Models.create();
+            const modelDef = {
+                name: 'Auth',
+                schema: {},
+                schemaDef: {},
+                options: {}
+            }
+            const model = Database.model('Auth', {});
+            expect(models.add(modelDef, model)).to.not.throw;
             expect(models.models.size).to.eql(1);
             expect(models.modelDefs.size).to.eql(1);
             expect(Database.model.calledWith('Auth', {})).to.be.ok;
@@ -67,7 +83,6 @@ describe('Models', function () {
                 options: {}
             }
             models.add(modelDef);
-            const model = models.model('Auth');
             expect(models.model('Auth')).to.be.instanceOf(Model);
         });
     });
