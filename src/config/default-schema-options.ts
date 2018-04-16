@@ -8,7 +8,9 @@
  */
 import * as mongoose from 'mongoose';
 
-export type DefaultSchemaOptions = mongoose.SchemaOptions;
+export class DefaultSchemaOptions implements mongoose.SchemaOptions {
+
+}
 export const SCHEMA_OPTIONS: DefaultSchemaOptions = {
     toJSON: { getters: true, virtuals: true },
     toObject: { getters: true, virtuals: true },

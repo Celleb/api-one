@@ -7,9 +7,29 @@
  * @license MIT
  */
 
-import { Config } from '../core';
 import { OPERATORS } from './default-operators';
 import { SCHEMA_OPTIONS } from './default-schema-options';
+import { DatabaseConfig } from '../core';
+import { DefaultSchemaOptions, Operators } from '.';
+
+export class Config {
+    name: string;
+    port: number;
+    env: string;
+
+    rootware?: {
+        bodyParser?: boolean;
+        methodOverride?: boolean;
+        morgan?: boolean;
+        compression?: boolean;
+        helmet?: boolean;
+        csurf: boolean;
+    };
+    dbConfig: DatabaseConfig | DatabaseConfig[];
+    operators: Operators;
+    schemaOptions: DefaultSchemaOptions;
+
+}
 
 export const CONFIG: Config = {
     name: 'API-ONE',
