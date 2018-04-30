@@ -106,7 +106,7 @@ export class RouteController {
      * @param res 
      */
     private outputHandler(req: express.Request, res: express.Response) {
-        res.$json(res.$output);
+        res.$json(res, res);
     }
 
     /**
