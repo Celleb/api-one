@@ -16,8 +16,9 @@ import { DI } from 'tsjs-di';
 chai.use(chaiPromised);
 const expect = chai.expect;
 
-const Model = require('../dist/core/model').Model;
-const getModel = require('../dist/model.mock').getModel;
+
+const Model = require('../').Model;
+const getModel = require('../../model.mock').getModel;
 
 const dictionary = {
     firstName: 'name',

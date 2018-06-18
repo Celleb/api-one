@@ -13,7 +13,7 @@ import * as chai from 'chai';
 import * as sinon from 'sinon';
 const expect = chai.expect;
 
-const OutputHandlers = require('../dist/lib/').OutputHandlers;
+const OutputHandlers = require('../output-handlers').OutputHandlers;
 
 function createHandler() {
     return OutputHandlers.create();

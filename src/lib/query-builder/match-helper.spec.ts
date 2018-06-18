@@ -15,11 +15,11 @@ import * as sinon from 'sinon';
 const expect = chai.expect;
 
 import { DI } from 'tsjs-di';
-const operators = require('../dist/config').OPERATORS;
+const operators = require('../../config').OPERATORS;
 DI.clear();
 DI.register({ provide: 'Operators', useValue: operators });
 
-const MatchHelper = require('../dist/lib').MatchHelper;
+const MatchHelper = require('./match-helper').MatchHelper;
 
 
 const dictionary = {

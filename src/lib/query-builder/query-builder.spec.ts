@@ -13,7 +13,7 @@ import * as chai from 'chai';
 import * as sinon from 'sinon';
 const expect = chai.expect;
 
-const QueryBuilder = require('../dist/lib').QueryBuilder;
+const QueryBuilder = require('./query-builder').QueryBuilder;
 
 const dictionary = {
     _id: 'id',

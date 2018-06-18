@@ -12,7 +12,7 @@ import * as mocha from 'mocha';
 import * as chai from 'chai';
 
 const expect = chai.expect;
-const ApiOneError = require('../dist/core/errors').ApiOneError;
+const ApiOneError = require('../errors').ApiOneError;
 
 describe('ApiOneError', function () {
     it('should be a function', function () {

@@ -6,6 +6,6 @@
  * All rights reserved
  * @license MIT
  */
-export * from './class.util';
+
 export * from './mapper.util';
 export * from './core.util';

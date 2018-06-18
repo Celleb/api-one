@@ -87,7 +87,7 @@ export class App {
     }
 
     /**
-     * Registers a dependency provider to the DI registery.
+     * Registers a dependency provider to the DI registry.
      * @param provider 
      */
     register(provider: any): App {

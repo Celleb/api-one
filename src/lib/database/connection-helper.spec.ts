@@ -11,8 +11,8 @@ declare var require: any;
 import * as mocha from 'mocha';
 import * as chai from 'chai';
 import * as sinon from 'sinon';
-const ConnectionHelper = require('../dist/lib/database/connection-helper').ConnectionHelper;
-const defaultOptions = require('../dist/lib/database/default-options').defaultOptions;
+const ConnectionHelper = require('./connection-helper').ConnectionHelper;
+const defaultOptions = require('./default-options').defaultOptions;
 
 
 const expect = chai.expect;

@@ -12,7 +12,7 @@ import * as chai from 'chai';
 import * as sinon from 'sinon';
 const expect = chai.expect;
 
-const Mapper = require('../dist/lib/utils').Mapper;
+const Mapper = require('./mapper.util').Mapper;
 
 const dataBase = {
     firstName: 'Jonas',

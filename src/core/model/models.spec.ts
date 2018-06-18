@@ -13,8 +13,8 @@ import * as mocha from 'mocha';
 import * as chai from 'chai';
 import * as sinon from 'sinon';
 const expect = chai.expect;
-const Models = require('../dist/core/model').Models;
-const Model = require('../dist/core/model').Model;
+const Models = require('../').Models;
+const Model = require('../').Model;
 import { DI } from 'tsjs-di';
 
 const Database = {

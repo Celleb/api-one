@@ -14,7 +14,7 @@ import * as sinon from 'sinon';
 const expect = chai.expect;
 
 import * as mongoose from 'mongoose';
-const Schema = require('../dist/core/model').Schema;
+const Schema = require('../').Schema;
 import { DI } from 'tsjs-di';
 
 

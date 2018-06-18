@@ -14,11 +14,15 @@ import * as sinon from 'sinon';
 import { DI } from 'tsjs-di';
 import * as express from 'express';
 import { Router } from 'express';
+import { OPERATORS } from '../../config';
 const expect = chai.expect;
 
-const RouteController = require('../dist/core').RouteController;
-const Model = require('../dist/core').Model;
-const getModel = require('../dist/model.mock').getModel;
+
+DI.register({ provide: 'Operators', useValue: OPERATORS });
+
+const RouteController = require('./route-controller').RouteController;
+const Model = require('../model/model').Model;
+const getModel = require('../../model.mock').getModel;
 
 const config = {
 
@@ -65,13 +69,12 @@ const modelOptions = {
 };
 
 
-function createRouter(rc?) {
 
-    return RouteController.create(rc || routeConfig, Model.create(_model, modelOptions, config));
+function createRouter(rc?) {
+    return RouteController.create(rc || routeConfig, Model.create(_model, modelOptions), config);
 }
 
 describe('RouteController', function () {
-
     describe('#create', function () {
         it('creates a new Router', function () {
             const rc = createRouter();

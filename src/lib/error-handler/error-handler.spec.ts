@@ -11,7 +11,7 @@ import * as mocha from 'mocha';
 import * as chai from 'chai';
 const expect = chai.expect;
 
-const errorHandler = require('../dist/lib/error-handler').errorHandler;
+const errorHandler = require('./error-handler').errorHandler;
 
 let req = {
 
