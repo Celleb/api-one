@@ -16,23 +16,15 @@ export class OutputHandlers {
 
     }
 
-    json(res: express.Response, req: express.Response, feedback?) {
+    static json(res: express.Response, req: express.Response, feedback?) {
         if (feedback) {
             return res.status(200).json(feedback).end();
         } else if (res.$output) {
-            return res.status(200).json(feedback).end();
+            return res.status(200).json(res.$output).end();
         } else {
             return res.status(201).end();
         }
 
-    }
-
-    static create() {
-        if (!this.handler) {
-            this.handler = new OutputHandlers();
-        }
-
-        return this.handler;
     }
 
 }

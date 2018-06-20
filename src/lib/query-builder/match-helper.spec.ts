@@ -10,14 +10,9 @@
 'use strict';
 import * as mocha from 'mocha';
 import * as chai from 'chai';
-import * as sinon from 'sinon';
 
 const expect = chai.expect;
 
-import { DI } from 'tsjs-di';
-const operators = require('../../config').OPERATORS;
-DI.clear();
-DI.register({ provide: 'Operators', useValue: operators });
 
 const MatchHelper = require('./match-helper').MatchHelper;
 

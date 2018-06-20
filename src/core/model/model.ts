@@ -6,12 +6,9 @@
  * All rights reserved
  * @license MIT
  */
-import { Data } from '../types';
-import { DI } from 'tsjs-di';
-
+import { Data, ModelOptions, Dictionary, ModelDefinition, DataOptions, FindOptions, UpdateOptions, Session } from '../types';
 import * as mongoose from 'mongoose';
 import * as express from 'express';
-import { ModelDefinition, ModelOptions, Dictionary, Session, DataOptions, Models, UpdateOptions, FindOptions } from '../';
 import { Mapper, $$ } from '../../lib/utils';
 import { QueryBuilder } from '../../lib';
 

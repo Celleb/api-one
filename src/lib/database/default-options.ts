@@ -9,7 +9,6 @@
 import { ConnectionOptions } from 'mongoose';
 
 export const defaultOptions: ConnectionOptions = {
-    useMongoClient: true,
     config: {
         autoIndex: false
     },

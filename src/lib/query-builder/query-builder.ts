@@ -8,13 +8,10 @@
  */
 
 import * as mongoose from 'mongoose';
-import { Dictionary } from '../../core';
-import { Operators } from '../../config';
+import { Dictionary } from '../../core/types';
 import { Mapper, $$ } from '../utils';
-import { Inject } from 'tsjs-di';
-import { MatchHelper } from '../index';
+import { MatchHelper } from '../query-builder/match-helper';
 import { stages } from '../../config/stages';
-import * as _ from 'lodash';
 
 export class QueryBuilder {
 
@@ -53,7 +50,7 @@ export class QueryBuilder {
                 (stage === 'search') ? pipeline.unshift(astage) : pipeline.push(astage);
             }
         }
-        return pipeline;
+        return pipeline.length > 0 ? pipeline : [{ $match: {} }];
     }
 
     /**

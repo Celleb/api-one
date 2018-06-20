@@ -8,20 +8,18 @@
  */
 
 import * as mongoose from 'mongoose';
-import { Dictionary } from '../../core';
 import { $$, Mapper } from '../utils';
-import { Operators } from '../../config';
-import { OperatorsInterface } from '../../core/types';
-import { Inject } from 'tsjs-di';
+import { Operators, OPERATORS } from '../../config';
+import { Dictionary, OperatorsInterface } from '../../core/types';
 
 export class MatchHelper implements OperatorsInterface {
     private schemaDef: mongoose.SchemaDefinition;
     private dictionary: Dictionary;
-    @Inject()
     operators: Operators;
     constructor(schemaDef: mongoose.SchemaDefinition, dictionary?: Dictionary) {
         this.schemaDef = schemaDef;
         this.dictionary = Mapper.invert(dictionary);
+        this.operators = OPERATORS
     }
 
     /**

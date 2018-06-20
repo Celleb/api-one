@@ -12,5 +12,5 @@ export interface ModelDefinition {
     schema: mongoose.Schema;
     name: string;
     schemaDef: mongoose.SchemaDefinition;
-    options: ModelOptions
+    options?: ModelOptions
 }

@@ -9,13 +9,13 @@
 
 import { OPERATORS } from './default-operators';
 import { SCHEMA_OPTIONS } from './default-schema-options';
-import { DatabaseConfig } from '../core';
+import { DatabaseConfig } from '../core/types';
 import { DefaultSchemaOptions, Operators } from '.';
 
 export class Config {
-    name: string;
-    port: number;
-    env: string;
+    name?: string;
+    port?: number;
+    env?: string;
 
     rootware?: {
         bodyParser?: boolean;
@@ -25,9 +25,9 @@ export class Config {
         helmet?: boolean;
         csurf: boolean;
     };
-    dbConfig: DatabaseConfig | DatabaseConfig[];
-    operators: Operators;
-    schemaOptions: DefaultSchemaOptions;
+    dbConfig?: DatabaseConfig | DatabaseConfig[];
+    operators?: Operators;
+    schemaOptions?: DefaultSchemaOptions;
 
 }
 

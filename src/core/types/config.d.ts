@@ -11,9 +11,9 @@ import { Operators, DefaultSchemaOptions } from '../../config';
 import * as mongoose from 'mongoose';
 
 export interface Config {
-    name: string;
-    port: number;
-    env: string;
+    name?: string;
+    port?: number;
+    env?: string;
 
     rootware?: {
         bodyParser?: boolean;
@@ -23,7 +23,7 @@ export interface Config {
         helmet?: boolean;
         csurf: boolean;
     },
-    dbConfig: DatabaseConfig | DatabaseConfig[],
-    operators: Operators,
-    schemaOptions: DefaultSchemaOptions
+    dbConfig?: DatabaseConfig | DatabaseConfig[],
+    operators?: Operators,
+    schemaOptions?: DefaultSchemaOptions
 }

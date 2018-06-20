@@ -6,8 +6,8 @@
  * All rights reserved
  * @license MIT
  */
-import { DI } from 'tsjs-di';
 import * as mongoose from 'mongoose';
+import { SCHEMA_OPTIONS } from '../../config/default-schema-options';
 
 export class Schema {
     private schema: mongoose.Schema;
@@ -21,8 +21,7 @@ export class Schema {
     }
 
     static create(schemaDef: mongoose.SchemaDefinition, options?: mongoose.SchemaOptions) {
-        const defaultOptions = DI.inject('DefaultSchemaOptions');
-        options = Object.assign({}, defaultOptions, options);
+        options = Object.assign({}, SCHEMA_OPTIONS, options);
 
         return (new this(schemaDef, options));
     }

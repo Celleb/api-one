@@ -8,8 +8,7 @@
  */
 'use strict';
 import * as mongoose from 'mongoose';
-import { Database } from '../../lib/database/database';
-import { ModelOptions, ModelDefinition } from '../types';
+import { ModelDefinition } from '../types';
 import { Model } from './model';
 import { DI } from 'tsjs-di';
 

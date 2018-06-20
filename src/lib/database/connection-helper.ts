@@ -48,7 +48,8 @@ export class ConnectionHelper {
         uri += this.config.port || 27017;
         uri += this.config.replicaSet ? ',' + this.config.replicaSet.hosts.join(',') : '';
         uri += '/' + this.config.name;
-        uri += '?' + this.config.queryOptions || '';
+        uri += '?'
+        uri += this.config.queryOptions || '';
         return uri;
     }
 

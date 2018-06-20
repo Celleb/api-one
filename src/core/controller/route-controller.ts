@@ -8,10 +8,12 @@
  * @license MIT
  */
 
-import { Config, Model, RouteConfig } from '../';
 import * as express from 'express';
 import { DI } from 'tsjs-di';
 import { METHODS } from '../../config';
+import { Config } from '../types/config';
+import { Model } from '../model/model';
+import { RouteConfig } from '../types';
 
 export class RouteController {
 
@@ -60,7 +62,6 @@ export class RouteController {
      * Adds handler(s) for a get request to the router.
      */
     private get() {
-        console.log('get');
 
         // get a single doc
         this.router.get('/:id', this.preWare('get'), (req: express.Request, res: express.Response, next: express.NextFunction) => {
@@ -70,7 +71,7 @@ export class RouteController {
                 next();
             });
 
-        }, this.postWare('post'), this.outputHandler);
+        }, this.postWare('get'), this.outputHandler);
 
         // get all docs
         this.router.get('/', this.preWare('get'), (req: express.Request, res: express.Response, next: express.NextFunction) => {

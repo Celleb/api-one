@@ -10,34 +10,31 @@ import { DatabaseConfig } from '../../core';
 import { ConnectionHelper } from './connection-helper';
 import * as mongoose from 'mongoose';
 import * as debug from 'debug';
-import { DI } from 'tsjs-di';
 
-export class Database extends mongoose.Connection {
+export class Database {
     /**
      * Database singleton instance
      */
     private static connection: mongoose.Connection;
-    private constructor(base: mongoose.Mongoose, config: DatabaseConfig) {
-        super(base);
+    private constructor(config: DatabaseConfig) {
         const helper = new ConnectionHelper(config);
-        this.open(helper.uri, config.name, config.port, helper.options);
+        Database.connection = mongoose.createConnection(helper.uri, helper.options);
     }
 
     private listen() {
-        this.on('connect', function () {
+        Database.connection.on('connect', function () {
             debug('database connected');
         });
 
-        this.on('disconnect', function () {
+        Database.connection.on('disconnect', function () {
             debug('database disconnected');
         });
     }
 
-    static connect(base?: mongoose.Mongoose, config?: DatabaseConfig): mongoose.Connection {
+    static connect(config: DatabaseConfig): mongoose.Connection {
         if (!Database.connection) {
-            config = config ? config : DI.inject('DatabaseConfig');
-            base = base ? base : (new mongoose.Mongoose());
-            Database.connection = (new Database(base, config));
+            config = config;
+            (new this(config));
         }
         return Database.connection;
     }

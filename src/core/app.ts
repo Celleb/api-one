@@ -20,9 +20,13 @@ import { DI } from 'tsjs-di';
 import { Application, Handler } from 'express';
 
 // local dependencies
-import { RouteConfig, Models, RouteController } from './';
+import { Models } from './model/models';
 import { Config, CONFIG, Operators } from '../config';
 import { errorHandler } from '../lib/error-handler';
+import { ModelDefinition, DatabaseConfig, RouteConfig } from './types';
+import { Database } from '../lib/database/database';
+import { attachments } from './attachments';
+import { RouteController } from './controller/route-controller';
 
 debug('api-one');
 
@@ -32,10 +36,20 @@ export class App {
     private application: Application;
     private config: Config;
 
-    constructor(config: Config) {
+    constructor(config: Config, models?: Models) {
         this.application = express();
         this.config = { ...CONFIG, ...config };
-        this.models = Models.create();
+        DI.register({ provide: Database, useValue: Database.connect(config.dbConfig as DatabaseConfig) })
+    }
+
+    addModel(modelDefs: ModelDefinition | ModelDefinition[]) {
+        if (Array.isArray(modelDefs)) {
+            for (let defs of modelDefs) {
+                return this.addModel(defs);
+            }
+        }
+
+        this.models.add(modelDefs as ModelDefinition);
     }
 
     /**
@@ -51,7 +65,7 @@ export class App {
      * @param handler - Route handler
      */
     addRouteHandler(path: string, handler: Handler) {
-        this.use(path, handler);
+        this.use('/' + path, handler);
 
         return this;
     }
@@ -81,10 +95,27 @@ export class App {
      * @param errorHandler 
      */
     errorHandler(errorHandler?): App {
-        errorHandler = errorHandler ? errorHandler : DI.inject('errorHandler');
+        // errorHandler = errorHandler ? errorHandler : DI.inject('errorHandler');
         this.use(errorHandler);
         return this;
     }
+
+    init(modelDefs?: ModelDefinition[]): App {
+        this.defaultProviders();
+        this.rootware();
+        this.models = Models.create();
+
+        // add models
+        if (modelDefs) {
+            this.addModel(modelDefs);
+        }
+
+        // add attachments
+        this.use(attachments);
+
+        return this;
+    }
+
 
     /**
      * Registers a dependency provider to the DI registry.
@@ -126,7 +157,7 @@ export class App {
         this.register({ provide: Config, useValue: this.config });
 
         // default error handler
-        this.register({ provide: 'errorHandler', useFuction: errorHandler });
+        // this.register({ provide: 'errorHandler', useValue: errorHandler });
 
         return this;
     }
@@ -140,7 +171,7 @@ export class App {
         this.config.rootware.bodyParser && this.use(bodyParser.urlencoded({
             extended: true
         })).use(bodyParser.json());
-        this.config.rootware.csurf && this.use(csurf());
+        // this.config.rootware.csurf && this.use(csurf());
         this.config.rootware.compression && this.use(compression());
         this.config.rootware.morgan && this.use(morgan('combined'));
     }
