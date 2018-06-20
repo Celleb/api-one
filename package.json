@@ -11,7 +11,8 @@
     "start": "node dist/index.js",
     "build": "gulp scripts && gulp tests",
     "test": "nyc mocha --reporter spec --compilers ts:ts-node/register 'test/**/*.spec.ts'",
-    "watch-tests": "mocha -r ts-node/register 'src/**/*.spec.ts' --watch --watch-extensions ts"
+    "watch-tests": "mocha -r ts-node/register 'src/**/*.spec.ts' --watch --watch-extensions ts",
+    "watch-e2e": "DEBUG=e2e mocha -r ts-node/register 'e2e/**/*.spec.ts' --watch --watch-extensions ts 'e2e/**/*.ts'"
   },
   "dependencies": {
     "body-parser": "^1.18.2",
@@ -30,6 +31,7 @@
     "@types/body-parser": "^1.16.8",
     "@types/chai": "^4.0.10",
     "@types/chai-as-promised": "^7.1.0",
+    "@types/chai-http": "0.0.29",
     "@types/compression": "^0.0.35",
     "@types/csurf": "^1.9.35",
     "@types/debug": "^0.0.30",

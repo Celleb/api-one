@@ -11,9 +11,6 @@ gulp.task('build', () => {
     return tsResults.js.pipe(gulp.dest('dist'));
 });
 
-
-
-
 gulp.task('watch', ['build'], () => {
     gulp.watch('src/**/*.ts', ['scripts']);
 });

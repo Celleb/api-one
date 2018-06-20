@@ -21,6 +21,13 @@
   dependencies:
     "@types/chai" "*"
 
+"@types/chai-http@0.0.29":
+  version "0.0.29"
+  resolved "https://registry.yarnpkg.com/@types/chai-http/-/chai-http-0.0.29.tgz#eee0470af9df0cfaf37cf383c446830a26d5da86"
+  dependencies:
+    "@types/chai" "*"
+    "@types/node" "*"
+
 "@types/chai@*":
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/@types/chai/-/chai-4.1.0.tgz#d9008fa4c06f6801f93396d121f0227cd4244ac6"
