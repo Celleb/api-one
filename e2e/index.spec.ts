@@ -43,16 +43,120 @@ app.createRoutes(TEST_ROUTES);
 
 // describe('Base Route')
 
+const agent = chai.request.agent(app.app);
+before(function () {
+    return app.models.model('users').model.remove({});
+});
 describe('GET users', () => {
 
-    it('responds with JSON array', function () {
-        return chai.request(app.app).get('/users')
+    it('gets an empty array as feedback', function () {
+        return agent.get('/users')
             .then(function (res) {
                 expect(res.status).to.equal(200);
                 expect(res).to.be.json;
+                expect(res.body).to.eql([]);
             }).catch(function (err) {
                 console.log(err)
                 throw err;
             });
+    });
+
+    after(function () {
+        return app.models.model('users').model.remove({});
+    });
+});
+
+describe('POST, GET and MODIFY Records', () => {
+
+    describe('POST users', function () {
+        it('creates and returns a new user from the database', function () {
+            const expected = {
+                _id: 1,
+                name: 'Jonas',
+                lastname: 'Tomanga'
+            }
+            return agent.post('/users')
+                .send({ _id: 1, name: 'Jonas', lastname: 'Tomanga' })
+                .then(function (res) {
+                    expect(res.status).to.eql(200);
+                    expect(res).to.be.json;
+                    expect(res.body).contains(expected);
+                    expect(res.body).to.haveOwnProperty('date');
+                });
+        });
+
+        it('creates and returns a 2nd user from the database', function () {
+            const expected = {
+                _id: 2,
+                name: 'Jon',
+                lastname: 'Manga'
+            }
+            return agent.post('/users')
+                .send({ _id: 2, name: 'Jon', lastname: 'Manga' })
+                .then(function (res) {
+                    expect(res.status).to.eql(200);
+                    expect(res).to.be.json;
+                    expect(res.body).contains(expected);
+                    expect(res.body).to.haveOwnProperty('date');
+                });
+        });
+    })
+
+    describe('GET All users', function () {
+        it('gets all users from the database', function () {
+            return agent.get('/users').then(function (res) {
+                expect(res.status).to.eql(200);
+                expect(res).to.be.json;
+                expect(res.body).to.an('array');
+                expect(res.body).to.be.length(2);
+            });
+        });
+    });
+
+    describe('GET a single user', function () {
+        it('get a single user', function () {
+            const expected = {
+                _id: 2,
+                name: 'Jon',
+                lastname: 'Manga'
+            }
+            return agent.get('/users/2').then(function (res) {
+                expect(res.status).to.eql(200);
+                expect(res).to.be.json;
+                expect(res.body).to.an('object');
+                expect(res.body).contains(expected);
+            });
+        });
+    });
+
+    describe('PATCH a single user', function () {
+        const expected = {
+            _id: 2,
+            name: 'Leonard',
+            lastname: 'Shivute'
+        }
+        it('modifies a record of a single user', function () {
+            return agent.patch('/users/2')
+                .send({ name: 'Leonard', lastname: 'Shivute' })
+                .then(function (res) {
+                    expect(res.status).to.eql(200);
+                    expect(res).to.be.json;
+                    expect(res.body).to.an('object');
+                    expect(res.body).contains(expected);
+                });
+        });
+
+        it('confirms the modified record', function () {
+            return agent.get('/users/2').then(function (res) {
+                expect(res.status).to.eql(200);
+                expect(res).to.be.json;
+                expect(res.body).to.an('object');
+                expect(res.body).contains(expected);
+            });
+        });
+    });
+
+    after(function () {
+        return app.models.model('users').model.remove({});
     });
 });
