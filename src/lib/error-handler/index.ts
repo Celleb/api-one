@@ -8,3 +8,4 @@
  */
 
 export * from './error-handler';
+export * from './mongo-db-error-handler';

@@ -151,7 +151,7 @@ export class RouteController {
             this.model.create(req, true).then(doc => {
                 res.$output = doc;
                 next();
-            });
+            }).catch(next);
 
         }, this.postWare('post'), this.outputHandler);
     }

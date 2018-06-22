@@ -11,6 +11,7 @@ import * as express from 'express';
 import { HttpStatusCodes } from '../../config/http-status-codes';
 import { ApiOneError } from '../../core/errors';
 import { ErrorMessages } from '../../config/error-messages';
+import { mongoDBErrorHandler } from './mongo-db-error-handler';
 
 let status = 500;
 let feedback: { [x: string]: any } = {};
@@ -19,6 +20,9 @@ export function errorHandler(error: Error | ApiOneError, req: express.Request, r
     if (res.headersSent) {
         return next(error);
     }
+
+    feedback.name = error.name || 'Unknown';
+    console.log(error.name);
     switch (error.name) {
         case 'ValidatorError':
         case 'ValidationError':
@@ -27,8 +31,8 @@ export function errorHandler(error: Error | ApiOneError, req: express.Request, r
             feedback.message = error.message ? error.message : ErrorMessages.validation;
             break;
 
-        case 'MongoError':
-            // [status, feedback] = mongoErrorHandler.resolve(err);
+        case 'BulkWriteError':
+            [status, feedback] = mongoDBErrorHandler(error);
             break;
 
         case 'ForbiddenError':
@@ -73,8 +77,6 @@ export function errorHandler(error: Error | ApiOneError, req: express.Request, r
             feedback.message = ErrorMessages.serverError;
             break;
     }
-
-    feedback.name = error.name || 'Unknown';
 
     return res.status(status).json(feedback).end();
 }
