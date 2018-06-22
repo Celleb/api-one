@@ -128,7 +128,7 @@ export class RouteController {
      * Adds handler(s) for a post request to the router.
      */
     private patch() {
-        this.router.post('/:id', this.preWare('patch'), (req: express.Request, res: express.Response, next: express.NextFunction) => {
+        this.router.patch('/:id', this.preWare('patch'), (req: express.Request, res: express.Response, next: express.NextFunction) => {
 
             this.model.patchByID(req).then(doc => {
                 res.$output = doc;
