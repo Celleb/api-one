@@ -14,6 +14,7 @@ import { METHODS } from '../../config';
 import { Config } from '../types/config';
 import { Model } from '../model/model';
 import { RouteConfig } from '../types';
+import { NotFoundError } from '../errors';
 
 export class RouteController {
 
@@ -67,6 +68,9 @@ export class RouteController {
         this.router.get('/:id', this.preWare('get'), (req: express.Request, res: express.Response, next: express.NextFunction) => {
 
             this.model.findOneByID(req).then(doc => {
+                if (!doc) {
+                    next(new NotFoundError({ message: this.routeConfig + ' could not be found.' }))
+                }
                 res.$output = doc;
                 next();
             });
@@ -90,7 +94,7 @@ export class RouteController {
     private delete() {
 
         // get a single doc
-        this.router.get('/:id', this.preWare('delete'), (req: express.Request, res: express.Response, next: express.NextFunction) => {
+        this.router.delete('/:id', this.preWare('delete'), (req: express.Request, res: express.Response, next: express.NextFunction) => {
 
             this.model.deleteByID(req).then(doc => {
                 res.$output = doc;
