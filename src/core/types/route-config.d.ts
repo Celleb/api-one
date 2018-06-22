@@ -10,6 +10,7 @@
 import { Handler } from 'express';
 
 export interface RouteConfig {
+    name?: string;
     path: string;
     model?: string;
     authentication?: Array<string> | boolean;

@@ -18,9 +18,10 @@ export class NotFoundError extends ApiOneError {
         if (typeof opts === 'object') {
             message = opts.message || message;
             code = opts.code || code;
-        }
+        } else {
 
-        message = opts as string;
+            message = opts as string;
+        }
 
         super(message, code);
 

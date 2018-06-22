@@ -9,7 +9,6 @@
  */
 
 import * as express from 'express';
-import { DI } from 'tsjs-di';
 import { METHODS } from '../../config';
 import { Config } from '../types/config';
 import { Model } from '../model/model';
@@ -68,8 +67,9 @@ export class RouteController {
         this.router.get('/:id', this.preWare('get'), (req: express.Request, res: express.Response, next: express.NextFunction) => {
 
             this.model.findOneByID(req).then(doc => {
+                const item = this.routeConfig.name ? this.routeConfig.name : 'Item ';
                 if (!doc) {
-                    next(new NotFoundError({ message: this.routeConfig + ' could not be found.' }))
+                    next(new NotFoundError({ message: item + ' could not be found.' }))
                 }
                 res.$output = doc;
                 next();

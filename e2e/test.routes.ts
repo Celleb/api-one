@@ -10,6 +10,7 @@
 import { RouteConfig } from "../src/core";
 
 export const TEST_ROUTES: RouteConfig[] = [{
+    name: 'User',
     path: 'users',
     model: 'users'
 }];
