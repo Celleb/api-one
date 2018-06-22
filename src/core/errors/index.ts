@@ -8,3 +8,5 @@
  */
 
 export * from './api-one-error';
+export * from './notfound-error';
+export * from './conflict-error';

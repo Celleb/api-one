@@ -55,6 +55,12 @@ export function errorHandler(error: Error | ApiOneError, req: express.Request, r
             feedback.message = error.message
             break;
 
+        case 'NotFoundError':
+            feedback.code = (error as ApiOneError).code;
+            status = HttpStatusCodes.NOT_FOUND
+            feedback.message = error.message
+            break;
+
         case 'UnavailableError':
             feedback.code = (error as ApiOneError).code;
             status = HttpStatusCodes.SERVICE_UNAVAILABLE;
