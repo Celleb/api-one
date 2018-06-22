@@ -122,9 +122,7 @@ export class Model implements ModelOptions {
      */
     findOne(query: object, options: FindOptions = {}): Promise<mongoose.Document> {
         let lean: boolean;
-        if (options.lean) {
-            lean = true;
-        }
+        lean = options.lean ? true : false;
 
         return ((options.translate && this.dictionary) ? this.translator(this.model.findOne(query, { lean }))
             : this.model.findOne(query, { lean })) as any;
@@ -140,8 +138,8 @@ export class Model implements ModelOptions {
             return Promise.reject(new ReferenceError('Missing parameter: `id`.'));
         }
         const options = {
-            translate: true,
-            lean: true
+            translate: true
+            // lean: true
         };
 
         return this.findOne({ _id: req.params.id }, options);
