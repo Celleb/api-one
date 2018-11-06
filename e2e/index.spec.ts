@@ -39,7 +39,7 @@ const config: Config = {
 const app = new App(config);
 app.init(models);
 app.createRoutes(TEST_ROUTES);
-//app.errorHandler(errorHandler);
+app.errorHandler(errorHandler);
 
 // describe('Base Route')
 
@@ -100,7 +100,20 @@ describe('POST, GET and MODIFY Records', () => {
                     expect(res.body).to.haveOwnProperty('date');
                 });
         });
-    })
+
+        it('produces a conflict error', function () {
+
+            return agent.post('/users')
+                .send({ _id: 2, name: 'Jon', lastname: 'Manga' })
+                .then(function (res) {
+                    expect(res.status).to.eql(409);
+                    expect(res).to.be.json;
+                    expect(res.body.code).to.eql(409);
+                    expect(res.body.name).to.eql('ConflictError');
+                    expect(res.body.message).to.eql('This resource/items conflicts with an existing resource or item.');
+                });
+        });
+    });
 
     describe('GET All users', function () {
         it('gets all users from the database', function () {
@@ -152,6 +165,39 @@ describe('POST, GET and MODIFY Records', () => {
                 expect(res).to.be.json;
                 expect(res.body).to.an('object');
                 expect(res.body).contains(expected);
+            });
+        });
+
+
+    });
+
+    describe('DELETE a user', function () {
+
+        it('delete a user from the database', function () {
+            const expected = {
+                _id: 2,
+                name: 'Leonard',
+                lastname: 'Shivute'
+            }
+            return agent.del('/users/2').then(function (res) {
+                expect(res.status).to.eql(201);
+                expect(res.body).to.be.empty;
+            });
+        });
+
+
+        it('confirms deletion', function () {
+            const expected = {
+                _id: 2,
+                name: 'Leonard',
+                lastname: 'Shivute'
+            }
+            return agent.get('/users/2').then(function (res) {
+                expect(res.status).to.eql(404);
+                expect(res).to.be.json;
+                expect(res.body.code).to.eql(404);
+                expect(res.body.name).to.eql('NotFoundError');
+                expect(res.body.message).to.eql('User could not be found.');
             });
         });
     });
